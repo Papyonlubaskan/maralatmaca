@@ -3,7 +3,6 @@ import Hero from '../components/Hero';
 import FeaturedBooks from '../components/FeaturedBooks';
 import NewsletterSection from '../components/NewsletterSection';
 import Footer from '../components/Footer';
-import MaintenanceChecker from '../components/MaintenanceChecker';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {

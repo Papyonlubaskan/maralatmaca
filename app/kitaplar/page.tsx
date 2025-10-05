@@ -2,17 +2,12 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { useSearchParams, redirect } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import Footer from '../../components/Footer';
 import BookFilters from '../../components/BookFilters';
 import LikeButton from '../../components/LikeButton';
 import ImageWithFallback from '../../components/ImageWithFallback';
 import { createBookSlug, createSlug } from '@/lib/utils';
-
-// Bakım modu kontrolü
-if (process.env.MAINTENANCE_MODE === 'true') {
-  redirect('/maintenance');
-}
 
 function BooksPageContent() {
   const [books, setBooks] = useState<any[]>([]);
