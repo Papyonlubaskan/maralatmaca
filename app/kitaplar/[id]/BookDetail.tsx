@@ -471,7 +471,7 @@ export default function BookDetail({ bookId }: BookDetailProps) {
                 </div>
 
                 {/* Satın Alma Linkleri */}
-                {(book.amazon_link || book.dr_link || book.idefix_link) && (
+                {(book.amazon_link || book.bkm_link || book.idefix_link) && (
                   <div className="space-y-3">
                     <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Satın Al</h3>
                     <div className="flex flex-wrap gap-3">
@@ -486,15 +486,15 @@ export default function BookDetail({ bookId }: BookDetailProps) {
                           Amazon
                         </a>
                       )}
-                      {book.dr_link && (
+                      {book.bkm_link && (
                         <a
-                          href={book.dr_link}
+                          href={book.bkm_link}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors"
                         >
-                          <i className="ri-shopping-bag-line mr-2"></i>
-                          D&R
+                          <i className="ri-book-line mr-2"></i>
+                          BKM Kitap
                         </a>
                       )}
                       {book.idefix_link && (
