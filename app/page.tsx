@@ -58,14 +58,11 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <>
-      <MaintenanceChecker />
-      <div className="min-h-screen">
-        <Hero />
-        <FeaturedBooks />
-        <NewsletterSection />
-        <Footer />
-      </div>
-    </>
+    <div className="min-h-screen">
+      <Hero />
+      <FeaturedBooks />
+      <NewsletterSection />
+      <Footer />
+    </div>
   );
 }
