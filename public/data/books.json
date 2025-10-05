@@ -1,0 +1,28 @@
+{
+  "books": [
+    {
+      "id": "1",
+      "title": "Saka ve Sanrı",
+      "slug": "saka-ve-sanri",
+      "description": "Gizem dolu bir hikaye...",
+      "cover_image": "https://static.readdy.ai/image/95e17ff92b66fd1dcbe3cf3a194e2fbb/6bdca6a002e82985b965d0a89f5f6c87.jfif",
+      "author": "Maral Atmaca",
+      "publish_date": "2023-01-15",
+      "status": "published",
+      "created_at": "2025-09-28T22:20:34.000Z",
+      "updated_at": "2025-09-28T22:20:34.000Z"
+    },
+    {
+      "id": "2",
+      "title": "Gizli Bahçe",
+      "slug": "gizli-bahce",
+      "description": "Sırlarla dolu bir bahçe...",
+      "cover_image": "https://via.placeholder.com/300x400/FF6B6B/FFFFFF?text=Gizli+Bahce",
+      "author": "Maral Atmaca",
+      "publish_date": "2023-02-20",
+      "status": "published",
+      "created_at": "2025-09-28T22:35:53.000Z",
+      "updated_at": "2025-09-28T22:35:53.000Z"
+    }
+  ]
+}

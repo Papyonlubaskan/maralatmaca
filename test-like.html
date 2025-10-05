@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Beğeni Test</title>
+</head>
+<body>
+    <h1>Beğeni API Test</h1>
+    <button onclick="testLike()">Beğeni Test</button>
+    <div id="result"></div>
+
+    <script>
+        async function testLike() {
+            try {
+                // Önce mevcut beğeni durumunu al
+                const getResponse = await fetch('/api/likes?bookId=2');
+                const getData = await getResponse.json();
+                console.log('GET Response:', getData);
+                
+                document.getElementById('result').innerHTML = 
+                    `Mevcut: ${getData.data.totalLikes} beğeni, beğenildi: ${getData.data.isLiked}`;
+                
+                // Beğeni ekle
+                const postResponse = await fetch('/api/likes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        bookId: '2',
+                        action: 'like'
+                    })
+                });
+                
+                const postData = await postResponse.json();
+                console.log('POST Response:', postData);
+                
+                document.getElementById('result').innerHTML += 
+                    `<br>Yeni: ${postData.data.totalLikes} beğeni, beğenildi: ${postData.data.isLiked}`;
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('result').innerHTML = 'Hata: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

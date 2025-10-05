@@ -1,0 +1,56 @@
+# Railway Environment Variables - Kopyala/Yapıştır
+# Railway Dashboard → Your Service → Variables sekmesine yapıştır
+
+NODE_ENV=production
+
+# Site URL (deploy sonrası Railway domain'i ile güncelle)
+NEXT_PUBLIC_SITE_URL=https://your-app.up.railway.app
+NEXT_PUBLIC_API_URL=https://your-app.up.railway.app/api
+NEXT_PUBLIC_SITE_NAME=Maral Atmaca
+
+# Database - Railway MySQL'den otomatik gelir
+DATABASE_URL=${{MYSQLURL}}
+DB_HOST=${{MYSQLHOST}}
+DB_PORT=${{MYSQLPORT}}
+DB_USER=${{MYSQLUSER}}
+DB_PASSWORD=${{MYSQLPASSWORD}}
+DB_NAME=${{MYSQLDATABASE}}
+
+# JWT Secret - 64 karakter random string oluştur
+# PowerShell: -join ((48..57) + (65..90) + (97..122) | Get-Random -Count 64 | ForEach-Object {[char]$_})
+JWT_SECRET=BURAYA_64_KARAKTER_RANDOM_STRING
+JWT_EXPIRES_IN=7d
+
+# Admin - ŞİFRELERİ DEĞİŞTİR!
+ADMIN_USERNAME=admin
+ADMIN_EMAIL=admin@yourdomain.com
+ADMIN_PASSWORD=BURAYA_GUCLU_SIFRE
+
+# Email (Gmail örneği)
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_SECURE=false
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASS=your-gmail-app-password
+EMAIL_FROM=noreply@yourdomain.com
+CONTACT_EMAIL=info@yourdomain.com
+REPLY_TO_EMAIL=info@yourdomain.com
+
+# File Upload
+UPLOAD_DIR=./public/uploads
+MAX_FILE_SIZE=10485760
+ALLOWED_FILE_TYPES=image/jpeg,image/png,image/gif,image/webp,application/pdf
+
+# Security
+CSRF_SECRET=BURAYA_32_KARAKTER_RANDOM_STRING
+BCRYPT_ROUNDS=12
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+
+# Logging
+LOG_LEVEL=info
+LOG_FILE=./logs/app.log
+
+# Backup
+BACKUP_DIR=./backups
+BACKUP_RETENTION_DAYS=30

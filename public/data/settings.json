@@ -1,0 +1,24 @@
+{
+  "id": "1",
+  "site_title": "Maral Atmaca - Yazar",
+  "site_description": "Gizem dolu hikayeler ve romanlar",
+  "contact_email": "info@maralatmaca.com",
+  "maintenance_mode": false,
+  "social_links": {
+    "twitter": "",
+    "instagram": "",
+    "facebook": "",
+    "youtube": ""
+  },
+  "analytics": {
+    "google_analytics": "",
+    "google_tag_manager": ""
+  },
+  "seo": {
+    "meta_title": "Maral Atmaca - Gizem Romanları",
+    "meta_description": "Saka ve Sanrı gibi gizem dolu romanları okuyabileceğiniz resmi site",
+    "meta_keywords": "maral atmaca, saka ve sanrı, gizem romanı, türkçe roman"
+  },
+  "created_at": "2023-01-01T00:00:00.000Z",
+  "updated_at": "2023-01-01T00:00:00.000Z"
+}
