@@ -853,15 +853,26 @@ export default function BooksManager() {
 
               {/* Content */}
               <div>
-                <label className="block text-sm font-medium text-gray-800 dark:text-gray-100 mb-2">Bölüm İçeriği *</label>
+                <label className="block text-sm font-medium text-gray-800 dark:text-gray-100 mb-2">
+                  Bölüm İçeriği *
+                  <span className="text-xs text-gray-500 ml-2">(Paragraflar için çift Enter kullanın)</span>
+                </label>
                 <textarea
                   required
                   value={chapterFormData.content}
                   onChange={e => setChapterFormData({ ...chapterFormData, content: e.target.value })}
-                  rows={15}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  placeholder="Bölüm içeriğini yazın..."
+                  rows={20}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono"
+                  placeholder="Bölüm içeriğini yazın veya yapıştırın...&#10;&#10;Paragraflar arasında çift Enter (boş satır) kullanın."
+                  style={{ 
+                    whiteSpace: 'pre-wrap',
+                    overflowWrap: 'break-word',
+                    lineHeight: '1.8'
+                  }}
                 />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                  💡 İpucu: Word/Notes'tan kopyala-yapıştır yapabilirsiniz. Paragraf düzeni korunur.
+                </p>
               </div>
 
               {/* Action buttons */}
