@@ -22,6 +22,7 @@ export default function BookDetail({ bookId }: BookDetailProps) {
   const [error, setError] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string>('');
   const [newComment, setNewComment] = useState('');
+  const [newCommentName, setNewCommentName] = useState('');
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [expandedChapter, setExpandedChapter] = useState<number | null>(null);
 
@@ -325,7 +326,7 @@ export default function BookDetail({ bookId }: BookDetailProps) {
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newComment.trim() || !book) return;
+    if (!newComment.trim() || !newCommentName.trim() || !book) return;
 
     setIsSubmittingComment(true);
     try {
@@ -336,8 +337,9 @@ export default function BookDetail({ bookId }: BookDetailProps) {
         },
         body: JSON.stringify({
           bookId: book.id.toString(),
-          userName: 'Anonim Okuyucu',
-          content: newComment.trim()
+          userName: newCommentName.trim(),
+          content: newComment.trim(),
+          userId: currentUserId
         }),
       });
 
@@ -347,13 +349,14 @@ export default function BookDetail({ bookId }: BookDetailProps) {
         // Add new comment to the list
         const newCommentData = {
           id: result.data.id,
-          name: 'Anonim Okuyucu',
+          name: newCommentName.trim(),
           content: newComment.trim(),
           created_at: new Date().toISOString()
         };
         
         setComments(prev => [newCommentData, ...prev]);
         setNewComment('');
+        setNewCommentName('');
         
         // Update comment count
         loadCommentCounts();
@@ -685,22 +688,34 @@ export default function BookDetail({ bookId }: BookDetailProps) {
 
             {/* Yorum Formu */}
             <form onSubmit={handleCommentSubmit} className="mb-8">
-              <div className="flex space-x-4">
+              <div className="space-y-3">
                 <input
                   type="text"
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  placeholder="Yorumunuzu yazın..."
-                  className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                  value={newCommentName}
+                  onChange={(e) => setNewCommentName(e.target.value)}
+                  placeholder="İsminiz"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                   disabled={isSubmittingComment}
+                  required
                 />
-                <button
-                  type="submit"
-                  disabled={!newComment.trim() || isSubmittingComment}
-                  className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  {isSubmittingComment ? 'Gönderiliyor...' : 'Gönder'}
-                </button>
+                <div className="flex space-x-4">
+                  <input
+                    type="text"
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder="Yorumunuzu yazın..."
+                    className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    disabled={isSubmittingComment}
+                    required
+                  />
+                  <button
+                    type="submit"
+                    disabled={!newComment.trim() || !newCommentName.trim() || isSubmittingComment}
+                    className="px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {isSubmittingComment ? 'Gönderiliyor...' : 'Gönder'}
+                  </button>
+                </div>
               </div>
             </form>
 
