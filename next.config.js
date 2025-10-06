@@ -10,6 +10,7 @@ const nextConfig = {
   
   // Output configuration for deployment
   output: process.env.BUILD_STANDALONE === 'true' ? 'standalone' : undefined,
+  outputFileTracingRoot: __dirname,
   
   // Performance settings
   compress: true,
@@ -24,6 +25,13 @@ const nextConfig = {
     minimumCacheTTL: 60 * 60 * 24 * 365, // 1 year
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        pathname: '/dvgsmuhjt/**',
+      },
+    ],
   },
 
   // Security headers
