@@ -116,17 +116,22 @@ export async function POST(request: NextRequest) {
       { expiresIn: JWT_EXPIRES_IN } as jwt.SignOptions
     );
 
-    // Session kaydet
+    // Session kaydet (optional - database yoksa çalışmayabilir)
     const sessionToken = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const sessionQuery = `
-      INSERT INTO admin_sessions (admin_id, token, expires_at, created_at)
-      VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 7 DAY), NOW())
-    `;
     
-    await executeQuery(sessionQuery, [
-      admin.id,
-      sessionToken
-    ]);
+    try {
+      const sessionQuery = `
+        INSERT INTO admin_sessions (admin_id, token, expires_at, created_at)
+        VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 7 DAY), NOW())
+      `;
+      
+      await executeQuery(sessionQuery, [
+        admin.id,
+        sessionToken
+      ]);
+    } catch (sessionError) {
+      console.log('Session kaydetme başarısız (database yok olabilir), devam ediliyor...');
+    }
 
     // Kullanıcı bilgilerini döndür (şifre olmadan)
     const user = {
