@@ -135,7 +135,7 @@ export async function PUT(
       updateData.category ?? null,
       updateData.cover_image ?? updateData.cover_image_url ?? null,
       updateData.status ?? 'draft',
-      updateData.publish_date ?? null,
+      updateData.publish_date && updateData.publish_date.trim() !== '' ? updateData.publish_date : null,
       updateData.amazon_link ?? null,
       updateData.dr_link ?? null,
       updateData.idefix_link ?? null,
