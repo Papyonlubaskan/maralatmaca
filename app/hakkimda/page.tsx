@@ -120,6 +120,21 @@ export default function AboutPage() {
                 </div>
               </div>
 
+              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+                <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">İstatistiklerim</h3>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-pink-50 dark:from-orange-900/20 dark:to-pink-900/20 rounded-xl">
+                    <div className="text-4xl font-bold text-orange-600 dark:text-orange-400 mb-2">{stats.totalBooks}</div>
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Yayınlanan Kitap</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Basılı Romanlar</div>
+                  </div>
+                  <div className="text-center p-4 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl">
+                    <div className="text-4xl font-bold text-green-600 dark:text-green-400 mb-2">{stats.yearsExperience}</div>
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Yıllık Deneyim</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">2017'den Beri</div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="space-y-8">
