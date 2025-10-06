@@ -864,8 +864,19 @@ export default function BooksManager() {
                     onPaste={(e) => {
                       e.preventDefault();
                       const text = e.clipboardData.getData('text');
-                      // Tek newline'ları boşluğa çevir, çift newline'ları koru (paragraf ayırıcı)
-                      const cleanedText = text.replace(/\n(?!\n)/g, ' ').replace(/\n\n+/g, '\n\n');
+                      
+                      // PDF ve Word'den gelen metinleri düzenle
+                      // 1. Önce boş satırları (paragraf ayırıcı) korumak için marker'a çevir
+                      let cleanedText = text.replace(/\n\s*\n/g, '§§PARAGRAPH§§');
+                      
+                      // 2. Kalan tüm tek satır sonlarını boşluğa çevir (PDF'den gelen satır sonları)
+                      cleanedText = cleanedText.replace(/\n/g, ' ');
+                      
+                      // 3. Marker'ları tekrar çift satır sonuna çevir
+                      cleanedText = cleanedText.replace(/§§PARAGRAPH§§/g, '\n\n');
+                      
+                      // 4. Fazla boşlukları temizle
+                      cleanedText = cleanedText.replace(/  +/g, ' ');
                       
                       // Cursor pozisyonuna yapıştır
                       const textarea = e.currentTarget;
