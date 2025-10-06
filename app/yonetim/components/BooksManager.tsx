@@ -852,28 +852,48 @@ export default function BooksManager() {
               </div>
 
               {/* Content */}
-              <div>
-                <label className="block text-sm font-medium text-gray-800 dark:text-gray-100 mb-2">
-                  Bölüm İçeriği *
-                  <span className="text-xs text-gray-500 ml-2">(Paragraflar için çift Enter kullanın)</span>
-                </label>
-                <textarea
-                  required
-                  value={chapterFormData.content}
-                  onChange={e => setChapterFormData({ ...chapterFormData, content: e.target.value })}
-                  rows={20}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono"
-                  placeholder="Bölüm içeriğini yazın veya yapıştırın...&#10;&#10;Paragraflar arasında çift Enter (boş satır) kullanın."
-                  style={{ 
-                    whiteSpace: 'pre-wrap',
-                    overflowWrap: 'break-word',
-                    lineHeight: '1.8'
-                  }}
-                />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                  💡 İpucu: Word/Notes'tan kopyala-yapıştır yapabilirsiniz. Paragraf düzeni korunur.
-                </p>
-              </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-800 dark:text-gray-100 mb-2">
+                    Bölüm İçeriği *
+                    <span className="text-xs text-gray-500 ml-2">(Paragraflar için çift Enter kullanın)</span>
+                  </label>
+                  <textarea
+                    required
+                    value={chapterFormData.content}
+                    onChange={e => setChapterFormData({ ...chapterFormData, content: e.target.value })}
+                    onPaste={(e) => {
+                      e.preventDefault();
+                      const text = e.clipboardData.getData('text');
+                      // Tek newline'ları boşluğa çevir, çift newline'ları koru (paragraf ayırıcı)
+                      const cleanedText = text.replace(/\n(?!\n)/g, ' ').replace(/\n\n+/g, '\n\n');
+                      
+                      // Cursor pozisyonuna yapıştır
+                      const textarea = e.currentTarget;
+                      const start = textarea.selectionStart;
+                      const end = textarea.selectionEnd;
+                      const currentValue = chapterFormData.content;
+                      const newValue = currentValue.substring(0, start) + cleanedText + currentValue.substring(end);
+                      
+                      setChapterFormData({ ...chapterFormData, content: newValue });
+                      
+                      // Cursor pozisyonunu ayarla
+                      setTimeout(() => {
+                        textarea.selectionStart = textarea.selectionEnd = start + cleanedText.length;
+                      }, 0);
+                    }}
+                    rows={20}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono"
+                    placeholder="Bölüm içeriğini yazın veya yapıştırın...&#10;&#10;Paragraflar arasında çift Enter (boş satır) kullanın."
+                    style={{
+                      whiteSpace: 'pre-wrap',
+                      overflowWrap: 'break-word',
+                      lineHeight: '1.8'
+                    }}
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                    💡 İpucu: PDF/Word/Notes'tan kopyala-yapıştır yapın. Paragraflar otomatik düzenlenir.
+                  </p>
+                </div>
 
               {/* Action buttons */}
               <div className="flex space-x-4 pt-6">
