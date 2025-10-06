@@ -97,61 +97,17 @@ export default function FeaturedBooks() {
         }
       }
 
-      // MySQL API başarısız olursa fallback verileri kullan
-      console.warn('MySQL API response not successful, using fallback data');
-      setBooks(getFallbackBooks());
+      // MySQL API başarısız - kitap gösterme
+      console.warn('MySQL API response not successful, no books to display');
+      setBooks([]);
 
     } catch (error) {
-      console.warn('MySQL API fetch error, using fallback data:', error);
+      console.warn('MySQL API fetch error, no books to display:', error);
       setHasError(true);
-      setBooks(getFallbackBooks());
+      setBooks([]);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const getFallbackBooks = (): Book[] => {
-    return [
-      {
-        id: 1,
-        title: "Kelebek Etkisi",
-        description: "Yaşamın en derin anlamlarını keşfeden bir hikaye. Her küçük eylemin nasıl büyük değişimlere yol açabileceğini anlatan dokunaklı bir roman.",
-        cover_image_url: "https://readdy.ai/api/search-image?query=Beautiful%20butterfly%20effect%20book%20cover%20with%20elegant%20typography%2C%20soft%20pastel%20colors%2C%20minimalist%20design%2C%20dreamy%20atmosphere%2C%20professional%20book%20design%20with%20warm%20background&width=400&height=600&seq=featured1&orientation=portrait",
-        author: "Maral Atmaca",
-        category: "Roman",
-        views: 1250,
-        publish_date: "2024-01-15",
-        amazon_link: "https://amazon.com/book1",
-        dr_link: "https://dr.com/book1",
-        idefix_link: "https://idefix.com/book1"
-      },
-      {
-        id: 2,
-        title: "Sonsuz Döngü",
-        description: "Zaman ve yaşam üzerine felsefi bir yaklaşım. İnsan ruhunun derinliklerini keşfeden etkileyici bir eser.",
-        cover_image_url: "https://readdy.ai/api/search-image?query=Infinite%20loop%20concept%20book%20cover%20with%20modern%20design%2C%20geometric%20patterns%2C%20blue%20and%20purple%20gradients%2C%20contemporary%20style%2C%20professional%20typography%20with%20simple%20background&width=400&height=600&seq=featured2&orientation=portrait",
-        author: "Maral Atmaca",
-        category: "Felsefe",
-        views: 890,
-        publish_date: "2024-02-20",
-        amazon_link: "https://amazon.com/book2",
-        dr_link: "https://dr.com/book2",
-        idefix_link: "https://idefix.com/book2"
-      },
-      {
-        id: 3,
-        title: "Ruhun Dili",
-        description: "İç dünyamızın gizli kapılarını açan eser. Spiritüel gelişim ve kişisel dönüşüm üzerine derin bir keşif.",
-        cover_image_url: "https://readdy.ai/api/search-image?query=Soul%20language%20spiritual%20book%20cover%20with%20mystical%20elements%2C%20warm%20golden%20colors%2C%20ethereal%20design%2C%20inspirational%20atmosphere%2C%20elegant%20typography%20with%20peaceful%20background&width=400&height=600&seq=featured3&orientation=portrait",
-        author: "Maral Atmaca",
-        category: "Spiritüel",
-        views: 1680,
-        publish_date: "2024-03-10",
-        amazon_link: "https://amazon.com/book3",
-        dr_link: "https://dr.com/book3",
-        idefix_link: "https://idefix.com/book3"
-      }
-    ];
   };
 
   const loadLikes = async () => {
@@ -292,6 +248,11 @@ export default function FeaturedBooks() {
     );
   }
 
+  // Kitap yoksa section'ı gösterme
+  if (!isLoading && books.length === 0) {
+    return null;
+  }
+
   return (
     <section className="py-20 bg-white dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -300,20 +261,6 @@ export default function FeaturedBooks() {
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             Ruhunuza dokunacak, hayata bakış açınızı değiştirecek eserler
           </p>
-          {hasError && (
-            <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 rounded-lg inline-flex items-center">
-              <i className="ri-information-line text-yellow-600 dark:text-yellow-400 mr-2"></i>
-              <span className="text-yellow-800 dark:text-yellow-300 text-sm">
-                Veriler yerel kaynaklardan yüklendi
-              </span>
-              <button 
-                onClick={handleRetry}
-                className="ml-3 text-yellow-600 dark:text-yellow-400 hover:text-yellow-800 dark:hover:text-yellow-200 text-sm underline cursor-pointer"
-              >
-                Yeniden dene
-              </button>
-            </div>
-          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
