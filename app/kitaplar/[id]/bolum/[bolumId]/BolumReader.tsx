@@ -40,6 +40,7 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
   const [editLineCommentText, setEditLineCommentText] = useState('');
   const [chapterLikes, setChapterLikes] = useState({ total: 0, isLiked: false });
   const [lineLikes, setLineLikes] = useState<{[key: number]: { total: number, isLiked: boolean }}>({});
+  const [lineLikesLoaded, setLineLikesLoaded] = useState(false);
 
   useEffect(() => {
     // Kullanıcı ID'sini oluştur
@@ -297,27 +298,47 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
 
   // Satır beğenilerini yükle
   const loadLineLikes = async () => {
-    // Satır beğenileri lazy load - sadece tıklanınca yüklenecek
-    // İlk yüklemede hiçbir şey yapmıyoruz (performans için)
-    setLineLikes({});
+    // localStorage'dan yükle
+    if (!chapter?.id) return;
+    const cacheKey = `lineLikes_chapter_${chapter.id}`;
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      try {
+        setLineLikes(JSON.parse(cached));
+        setLineLikesLoaded(true);
+      } catch (e) {
+        console.error('Cache parse error:', e);
+      }
+    }
   };
   
   // Tek bir satırın beğenisini yükle
   const loadSingleLineLike = async (lineIndex: number) => {
     if (!chapter?.id) return;
     
+    // Zaten yüklenmişse tekrar yükleme
+    if (lineLikes[lineIndex] !== undefined) return;
+    
     try {
       const response = await fetch(`/api/likes?chapterId=${chapter.id}&lineNumber=${lineIndex}`);
       if (response.ok) {
         const result = await response.json();
         if (result.success) {
-          setLineLikes(prev => ({
-            ...prev,
-            [lineIndex]: {
-              total: result.data.totalLikes || result.data.likeCount || 0,
-              isLiked: result.data.isLiked || false
-            }
-          }));
+          const newLikeData = {
+            total: result.data.totalLikes || result.data.likeCount || 0,
+            isLiked: result.data.isLiked || false
+          };
+          
+          setLineLikes(prev => {
+            const updated = {
+              ...prev,
+              [lineIndex]: newLikeData
+            };
+            // localStorage'a kaydet
+            const cacheKey = `lineLikes_chapter_${chapter.id}`;
+            localStorage.setItem(cacheKey, JSON.stringify(updated));
+            return updated;
+          });
         }
       }
     } catch (error) {
@@ -369,11 +390,9 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
     if (!currentUserId || !chapter) return;
     
     // İlk tıklamada beğeni bilgisini yükle (lazy load)
-    if (!lineLikes[lineIndex]) {
+    if (lineLikes[lineIndex] === undefined) {
       await loadSingleLineLike(lineIndex);
-      // Kısa bekle ve tekrar dene
-      setTimeout(() => handleLineLike(lineIndex, lineText, e), 150);
-      return;
+      return; // İlk tıklamada sadece yükle, beğenme
     }
     
     const currentLike = lineLikes[lineIndex];
@@ -381,13 +400,19 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
     const currentCount = currentLike.total;
     
     // Optimistik update - anında görünüm değiştir
-    setLineLikes(prev => ({
-      ...prev,
+    const newLikeState = {
+      ...lineLikes,
       [lineIndex]: {
         total: isCurrentlyLiked ? Math.max(0, currentCount - 1) : currentCount + 1,
         isLiked: !isCurrentlyLiked
       }
-    }));
+    };
+    
+    setLineLikes(newLikeState);
+    
+    // localStorage'a kaydet
+    const cacheKey = `lineLikes_chapter_${chapter.id}`;
+    localStorage.setItem(cacheKey, JSON.stringify(newLikeState));
     
     try {
       const response = await fetch('/api/likes', {
@@ -396,6 +421,7 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
         body: JSON.stringify({
           chapterId: chapter.id,
           lineNumber: lineIndex,
+          userId: currentUserId,
           action: isCurrentlyLiked ? 'unlike' : 'like'
         })
       });
@@ -404,21 +430,27 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
       
       if (!result.success) throw new Error(result.error);
       
-      // Sunucudan gelen gerçek değerle güncelle
-      setLineLikes(prev => ({
-        ...prev,
+      // Sunucudan gelen gerçek değerle güncelle ve kaydet
+      const serverLikeState = {
+        ...lineLikes,
         [lineIndex]: {
           total: result.data.totalLikes || result.data.likeCount || 0,
           isLiked: result.data.isLiked || false
         }
-      }));
+      };
+      
+      setLineLikes(serverLikeState);
+      localStorage.setItem(cacheKey, JSON.stringify(serverLikeState));
+      
     } catch (error) {
       console.error('Line like error:', error);
       // Hata olursa eski değere geri dön
-      setLineLikes(prev => ({
-        ...prev,
+      const revertedState = {
+        ...lineLikes,
         [lineIndex]: { total: currentCount, isLiked: isCurrentlyLiked }
-      }));
+      };
+      setLineLikes(revertedState);
+      localStorage.setItem(cacheKey, JSON.stringify(revertedState));
     }
   };
 
