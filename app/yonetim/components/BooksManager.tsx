@@ -885,11 +885,16 @@ export default function BooksManager() {
                       // 4. Kalan tüm tek satır sonlarını boşluğa çevir (PDF'den gelen satır sonları)
                       cleanedText = cleanedText.replace(/\n/g, ' ');
                       
-                      // 5. Marker'ları tekrar çift satır sonuna çevir
-                      cleanedText = cleanedText.replace(/§§PARAGRAPH§§/g, '\n\n');
+                      // 5. Marker'ları tekrar çift satır sonuna çevir ve paragraf girintisi ekle
+                      cleanedText = cleanedText.replace(/§§PARAGRAPH§§/g, '\n\n     '); // 5 boşluk girinti
                       
-                      // 6. Fazla boşlukları temizle
-                      cleanedText = cleanedText.replace(/  +/g, ' ');
+                      // 6. İlk paragrafın başına da girinti ekle (eğer boşlukla başlamıyorsa)
+                      if (cleanedText && !cleanedText.startsWith(' ') && !cleanedText.startsWith('\n')) {
+                        cleanedText = '     ' + cleanedText; // İlk paragrafa da girinti
+                      }
+                      
+                      // 7. Fazla boşlukları temizle (ama girinti boşluklarını koru)
+                      cleanedText = cleanedText.replace(/([^\n ]) {2,}([^\n ])/g, '$1 $2');
                       
                       // Cursor pozisyonuna yapıştır
                       const textarea = e.currentTarget;
