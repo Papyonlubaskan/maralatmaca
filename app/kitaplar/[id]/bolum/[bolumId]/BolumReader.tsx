@@ -475,7 +475,7 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
     
     try {
       const lines = chapter.content ? chapter.content.split('\n') : [];
-      const selectedLineText = lines[selectedLine]?.trim() || '';
+      const selectedLineText = lines[selectedLine]?.trimEnd() || '';
       
       const response = await fetch(`/api/comments`, {
         method: 'POST',
@@ -901,10 +901,11 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
                             wordWrap: 'break-word', 
                             overflowWrap: 'break-word',
                             maxWidth: '100%',
-                            minWidth: '0'
+                            minWidth: '0',
+                            whiteSpace: 'pre-wrap' // Paragraf girintilerini koru
                           }}
                           onClick={() => toggleComments(lineNumber)}
-                          dangerouslySetInnerHTML={{ __html: line.trim() }}
+                          dangerouslySetInnerHTML={{ __html: line.trimEnd() }}
                         />
                       </div>
                       
@@ -1200,10 +1201,10 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
                   <div className="mb-6">
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Seçilen satır:</p>
                     <div className="bg-white dark:bg-gray-700 border border-orange-200 dark:border-orange-800 rounded-xl p-4 shadow-sm max-w-full overflow-hidden">
-                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-sm break-words whitespace-normal">
+                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-sm break-words" style={{ whiteSpace: 'pre-wrap' }}>
                         {(() => {
                           // Orijinal satır numarasını kullan, filter yapma
-                          const line = chapter.content.split('\n')[activeLine]?.trim() || '';
+                          const line = chapter.content.split('\n')[activeLine]?.trimEnd() || '';
                           // HTML tag'lerini kaldır, sadece metin göster
                           return line.replace(/<[^>]*>/g, '');
                         })()}
