@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/middleware/admin-auth';
 import { successResponse, errorResponse } from '@/lib/api-response';
-import { createFileUploadSecurity, imageUploadConfig, documentUploadConfig } from '@/lib/security/file-upload';
+import { v2 as cloudinary } from 'cloudinary';
+
+// Cloudinary konfigürasyonu
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dvgsmuhjt',
+  api_key: process.env.CLOUDINARY_API_KEY || '911194959441699',
+  api_secret: process.env.CLOUDINARY_API_SECRET || 'vCFmQl3ffuacqiOnE38E3la6dg8'
+});
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,31 +24,48 @@ export async function POST(request: NextRequest) {
       return errorResponse('Dosya seçilmedi', 400);
     }
 
-    // Choose upload configuration based on type
-    const config = uploadType === 'document' ? documentUploadConfig : imageUploadConfig;
-    const uploadSecurity = createFileUploadSecurity(config);
-
-    // Process file with security checks
-    const result = await uploadSecurity.processFile(
-      file,
-      file.name,
-      file.type,
-      file.size
-    );
-
-    if (!result.success) {
-      return errorResponse(result.error || 'Dosya yüklenemedi', 400);
+    // Dosya boyut kontrolü (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      return errorResponse('Dosya boyutu 5MB\'dan küçük olmalıdır', 400);
     }
 
-    const uploadedFile = result.file!;
+    // Dosya türü kontrolü
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+      return errorResponse('Sadece resim dosyaları yüklenebilir (JPG, PNG, WebP, GIF)', 400);
+    }
+
+    // Dosyayı buffer'a çevir
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    // Cloudinary'ye yükle
+    const uploadResult = await new Promise<any>((resolve, reject) => {
+      cloudinary.uploader.upload_stream(
+        {
+          folder: uploadType === 'image' ? 'maralatmaca/books' : 'maralatmaca/documents',
+          resource_type: 'image',
+          transformation: uploadType === 'image' ? [
+            { width: 800, height: 1200, crop: 'limit' },
+            { quality: 'auto:good' },
+            { fetch_format: 'auto' }
+          ] : undefined
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      ).end(buffer);
+    });
 
     return successResponse({
-      filename: uploadedFile.filename,
-      originalName: uploadedFile.originalName,
-      url: `/uploads/${uploadType}s/${uploadedFile.filename}`,
-      size: uploadedFile.size,
-      type: uploadedFile.mimeType,
-      extension: uploadedFile.extension
+      filename: uploadResult.public_id,
+      originalName: file.name,
+      url: uploadResult.secure_url,
+      size: uploadResult.bytes,
+      type: file.type,
+      width: uploadResult.width,
+      height: uploadResult.height
     }, 'Dosya başarıyla yüklendi');
 
   } catch (error) {
@@ -58,19 +82,17 @@ export async function DELETE(request: NextRequest) {
       return authError;
     }
 
-    const { filename, type = 'image' } = await request.json();
+    const { filename, publicId } = await request.json();
 
-    if (!filename) {
-      return errorResponse('Dosya adı gerekli', 400);
+    if (!filename && !publicId) {
+      return errorResponse('Dosya adı veya public ID gerekli', 400);
     }
 
-    const config = type === 'document' ? documentUploadConfig : imageUploadConfig;
-    const uploadSecurity = createFileUploadSecurity(config);
-    
-    const filePath = `${config.uploadPath}/${filename}`;
-    const deleted = await uploadSecurity.deleteFile(filePath);
+    // Cloudinary'den sil
+    const idToDelete = publicId || filename;
+    const result = await cloudinary.uploader.destroy(idToDelete);
 
-    if (!deleted) {
+    if (result.result !== 'ok') {
       return errorResponse('Dosya bulunamadı veya silinemedi', 404);
     }
 
