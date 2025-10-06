@@ -697,24 +697,24 @@ export default function BooksManager() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-800 dark:text-gray-100 mb-2">D&R Link</label>
+                  <label className="block text-sm font-medium text-gray-800 dark:text-gray-100 mb-2">Tamadres Link</label>
                   <input
                     type="url"
                     value={formData.dr_link}
                     onChange={e => setFormData({ ...formData, dr_link: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    placeholder="https://dr.com/..."
+                    placeholder="https://tamadres.com/..."
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-800 dark:text-gray-100 mb-2">İdefix Link</label>
+                  <label className="block text-sm font-medium text-gray-800 dark:text-gray-100 mb-2">BKM Kitap Link</label>
                   <input
                     type="url"
                     value={formData.idefix_link}
                     onChange={e => setFormData({ ...formData, idefix_link: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    placeholder="https://idefix.com/..."
+                    placeholder="https://bkmkitap.com/..."
                   />
                 </div>
               </div>
