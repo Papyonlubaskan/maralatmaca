@@ -27,9 +27,12 @@ export async function GET(request: NextRequest) {
     } catch (error) {
       health.database = {
         status: 'disconnected',
-        error: 'Bağlantı başarısız'
+        error: 'Database unavailable (normal for local dev without MySQL)'
       };
-      health.status = 'unhealthy';
+      // Local development için unhealthy olarak işaretleme
+      if (process.env.NODE_ENV !== 'development') {
+        health.status = 'unhealthy';
+      }
     }
 
     // Redis health check (optional)

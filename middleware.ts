@@ -2,9 +2,9 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  // Bakım modu varsayılan AÇIK - Admin panelden kapatılabilir
-  // Railway Variables'da MAINTENANCE_MODE=false yapana kadar bakım modunda
-  const maintenanceMode = process.env.MAINTENANCE_MODE !== 'false';
+  // Bakım modu varsayılan AÇIK - Production'da
+  // Development'ta kapalı
+  const maintenanceMode = process.env.NODE_ENV === 'production' && process.env.MAINTENANCE_MODE !== 'false';
   const pathname = request.nextUrl.pathname;
 
   // Admin paneli ve bakım sayfası hariç tüm sayfaları bakıma yönlendir
