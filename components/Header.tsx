@@ -47,7 +47,7 @@ export default function Header() {
         }
       }
     } catch (error) {
-      console.error('Header settings load error:', error);
+      // Sessizce göz ardı et - bakım modunda veya ilk yüklemede normal
     }
   };
 
