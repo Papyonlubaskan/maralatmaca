@@ -109,14 +109,13 @@ export default function AboutPage() {
                   </p>
                   <p className="text-lg leading-relaxed text-gray-700 dark:text-gray-300 font-light">
                     Hayatının büyük bir bölümünü yazmaya adayan Maral Atmaca, gördüğü, 
-                    duyduğu ve yaşildiği her şeyden esinlenmeyi sevmekte. Yazarın basılı 
+                    duyduğu ve yaşadığı her şeyden esinlenmeyi sevmekte. Yazarın basılı 
                     eserleri <span className="font-medium text-orange-600 dark:text-orange-400">Yaralasar, Ötanazi Okulu, Medusa'nın Ölü Kumları, Öyle Bir 
                     Uğradım, Saka ve Sanrı</span> romanlarıdır.
                   </p>
                   <p className="text-lg leading-relaxed text-gray-700 dark:text-gray-300 font-light">
-                    Her hikaye yazdığım da, sadece kendi hayal gücümle değil, aynı zamanda 
-                    binlerce okurumun kalbiyle de yazıyorum. Onların yorumları, duygusal 
-                    tepkileri ve beklentileri, hikayelerimi şekillendiriyor.
+                    Her hikaye yazdığımda, sadece kendi hayal gücümle değil, aynı zamanda 
+                    okurlarımın yorumları, duygusal tepkileri ve beklentileri ile şekilleniyor.
                   </p>
                 </div>
               </div>
@@ -207,10 +206,9 @@ export default function AboutPage() {
                   </div>
                 </div>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
-                  En çok okunan romanım <span className="font-semibold text-purple-600 dark:text-purple-400">Saka ve Sanrı</span>'yı yayınladım. 
+                  <span className="font-semibold text-purple-600 dark:text-purple-400">Saka ve Sanrı</span> romanımı yayınladım. 
                   Bu dönemde tam zamanlı yazarlığa geçiş yaptım. Okurlarımla doğrudan iletişim kurduğum dijital platformlarda 
-                  bölüm bölüm yayınladığım hikayeler, on binlerce kişi tarafından takip edildi. Her gün aldığım geri bildirimler 
-                  ve yorumlar, hikayelerimi şekillendirdi.
+                  bölüm bölüm yayınladığım hikayeler için aldığım geri bildirimler ve yorumlar, hikayelerimi şekillendirdi.
                 </p>
               </div>
 
