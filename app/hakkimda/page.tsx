@@ -103,7 +103,7 @@ export default function AboutPage() {
                 <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-8">Merhaba, Ben Maral</h2>
                 <div className="space-y-6">
                   <p className="text-lg leading-relaxed text-gray-700 dark:text-gray-300 font-light">
-                    Maral Atmaca 1991 yılında Aksaray'nın küçük bir ilçesinde doğmuştur. 
+                    Maral Atmaca 1991 yılında Aksaray'ın küçük bir ilçesinde doğmuştur. 
                     Çocuk yaşlardan beri yazmaya ilgi duyan yazarın ilk yazım denemeleri 
                     şiir ve öykü üzerine olmuş, ilk romanını ise 2017 yılında yazmaya başlamıştır.
                   </p>
