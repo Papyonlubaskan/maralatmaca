@@ -866,16 +866,29 @@ export default function BooksManager() {
                       const text = e.clipboardData.getData('text');
                       
                       // PDF ve Word'den gelen metinleri düzenle
-                      // 1. Önce boş satırları (paragraf ayırıcı) korumak için marker'a çevir
-                      let cleanedText = text.replace(/\n\s*\n/g, '§§PARAGRAPH§§');
+                      // Tüm satır sonu türlerini normalize et (\r\n, \r, \n)
+                      let cleanedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
                       
-                      // 2. Kalan tüm tek satır sonlarını boşluğa çevir (PDF'den gelen satır sonları)
+                      // 1. Önce boş satırları (paragraf ayırıcı) korumak için marker'a çevir
+                      // 2+ boş satırı tek paragraf ayırıcıya çevir
+                      cleanedText = cleanedText.replace(/\n\s*\n\s*\n+/g, '§§PARAGRAPH§§');
+                      // 2 boş satırı paragraf ayırıcıya çevir
+                      cleanedText = cleanedText.replace(/\n\s*\n/g, '§§PARAGRAPH§§');
+                      
+                      // 2. Cümle sonu + newline → Paragraf sonu
+                      // Nokta, ünlem, soru işareti, tırnak + newline + büyük harf/boşluk
+                      cleanedText = cleanedText.replace(/([.!?"\)\]])\n+(\s*[A-ZÇĞİÖŞÜ""])/g, '$1§§PARAGRAPH§§$2');
+                      
+                      // 3. İtalik metin sonu (örnek: "Bunu ona nasıl yapabildi?") + newline
+                      cleanedText = cleanedText.replace(/([.!?]")\n+(\s*\S)/g, '$1§§PARAGRAPH§§$2');
+                      
+                      // 4. Kalan tüm tek satır sonlarını boşluğa çevir (PDF'den gelen satır sonları)
                       cleanedText = cleanedText.replace(/\n/g, ' ');
                       
-                      // 3. Marker'ları tekrar çift satır sonuna çevir
+                      // 5. Marker'ları tekrar çift satır sonuna çevir
                       cleanedText = cleanedText.replace(/§§PARAGRAPH§§/g, '\n\n');
                       
-                      // 4. Fazla boşlukları temizle
+                      // 6. Fazla boşlukları temizle
                       cleanedText = cleanedText.replace(/  +/g, ' ');
                       
                       // Cursor pozisyonuna yapıştır
