@@ -128,6 +128,16 @@ export default function AboutPage() {
                     <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Yayınlanan Kitap</div>
                     <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Basılı Romanlar</div>
                   </div>
+                  <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-xl">
+                    <div className="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">{formatNumber(stats.totalReaders)}+</div>
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Toplam Okur</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Tüm Platformlar</div>
+                  </div>
+                  <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl">
+                    <div className="text-4xl font-bold text-purple-600 dark:text-purple-400 mb-2">{formatNumber(stats.totalComments)}+</div>
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Yorum & Etkileşim</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Aktif Topluluk</div>
+                  </div>
                   <div className="text-center p-4 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl">
                     <div className="text-4xl font-bold text-green-600 dark:text-green-400 mb-2">{stats.yearsExperience}</div>
                     <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Yıllık Deneyim</div>
