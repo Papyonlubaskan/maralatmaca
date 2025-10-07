@@ -80,7 +80,7 @@ export default function AboutPage() {
     <>
       <PersonStructuredData
         name="Maral Atmaca"
-        description="1991 Aksaray doğumlu çağdaş Türk edebiyatı yazarı. Yaralasar, Ötanazi Okulu, Medusa'nın Ölü Kumları, Öyle Bir Uğradım, Saka ve Sanrı romanlarının yazarı."
+        description="1991 Aksaray doğumlu çağdaş Türk edebiyatı yazarı. Yaralasar, Ötanazi Okulu, Medusa'nın Ölü Kumları, Öyle Bir Uğradım, Saka ve Sanrı romanlarının yazarı. Okurlardan aldığı geri bildirimler yazması için motivasyon sağlar."
         image="https://static.readdy.ai/image/95e17ff92b66fd1dcbe3cf3a194e2fbb/a599980b101fd8dacfcfcbdeed753471.jfif"
         sameAs={[
           'https://maralatmaca.com',
@@ -197,13 +197,13 @@ export default function AboutPage() {
                   <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-pink-500 text-white rounded-full flex items-center justify-center font-bold mr-4 text-xl shadow-lg">1</div>
                   <div>
                     <h4 className="text-xl font-bold text-gray-800 dark:text-white">2017 - Başlangıç</h4>
-                    <p className="text-sm text-orange-600 dark:text-orange-400 font-medium">İlk Roman</p>
+                    <p className="text-sm text-orange-600 dark:text-orange-400 font-medium">Basılı Eser</p>
                   </div>
                 </div>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
-                  Yazarlık serüvenim 2017 yılında, ilk romanım <span className="font-semibold text-orange-600 dark:text-orange-400">Yaralasar</span>'ı kaleme alarak başladı. 
+                  Yazarlık serüvenim 2021 yılında <span className="font-semibold text-orange-600 dark:text-orange-400">Yaralasar</span>'ı çıkartarak başladı. 
                   Çocukluktan beri tuttuğum günlükler ve yazdığım şiirler, nihayet bir romana dönüşüyordu. 
-                  Bu ilk adım, hayatımın en büyük kararlarından biri oldu.
+                  Bu adım, hayatımın en büyük kararlarından biri oldu.
                 </p>
               </div>
 
@@ -218,7 +218,7 @@ export default function AboutPage() {
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
                   <span className="font-semibold text-blue-600 dark:text-blue-400">Ötanazi Okulu</span>, <span className="font-semibold text-blue-600 dark:text-blue-400">Medusa'nın Ölü Kumları</span> ve 
                   <span className="font-semibold text-blue-600 dark:text-blue-400"> Öyle Bir Uğradım</span> romanlarıyla farklı türleri keşfettim. 
-                  Gizem, psikolojik gerilim ve dram türlerinde kendimi geliştirdim.
+                  Gizem, psikolojik gerilim, fantastik ve dram türlerinde kendimi geliştirdim.
                 </p>
               </div>
 
@@ -231,9 +231,9 @@ export default function AboutPage() {
                   </div>
                 </div>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
-                  <span className="font-semibold text-purple-600 dark:text-purple-400">Saka ve Sanrı</span> romanımı yayınladım. 
-                  Bu dönemde tam zamanlı yazarlığa geçiş yaptım. Okurlarımla doğrudan iletişim kurduğum dijital platformlarda 
-                  bölüm bölüm yayınladığım hikayeler için aldığım geri bildirimler ve yorumlar, hikayelerimi şekillendirdi.
+                  Son olarak <span className="font-semibold text-purple-600 dark:text-purple-400">Saka ve Sanrı</span>, <span className="font-semibold text-purple-600 dark:text-purple-400">Sarkaç</span> romanımı yayınladım. 
+                  Okurlarımla doğrudan iletişim kurduğum dijital platformlarda 
+                  bölüm bölüm yayınladığım hikayeler için aldığım geri bildirimler ve yorumlar, yazmam için beni motive ediyor.
                 </p>
               </div>
 
