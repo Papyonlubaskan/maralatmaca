@@ -101,7 +101,7 @@ export async function PUT(
     }
 
     const commentId = (await params).id;
-    const { userId, content, status, is_hidden } = await request.json();
+    const { userId, content, status, is_hidden, priority, admin_reply } = await request.json();
     
     // Admin kontrolü
     const adminCheck = await requireAdmin(request);
@@ -156,24 +156,73 @@ export async function PUT(
       );
     }
 
+    // Admin yanıtı (sadece admin)
+    if (admin_reply !== undefined) {
+      if (!isAdmin) {
+        return errorResponse('Yetkiniz yok: Sadece adminler yanıt verebilir', 403);
+      }
+      
+      // Admin bilgisini al
+      const adminInfo = adminCheck?.admin;
+      const adminUsername = adminInfo?.username || 'Admin';
+      
+      const updateQuery = 'UPDATE comments SET admin_reply = ?, admin_reply_by = ?, admin_reply_at = NOW(), updated_at = NOW() WHERE id = ?';
+      await executeQuery(updateQuery, [admin_reply, adminUsername, commentId]);
+      
+      return successResponse(
+        { id: commentId, admin_reply, admin_reply_by: adminUsername },
+        'Admin yanıtı gönderildi',
+        {
+          'X-RateLimit-Limit': '100',
+          'X-RateLimit-Remaining': rateLimit.remaining.toString(),
+          'X-RateLimit-Reset': rateLimit.resetTime.toString()
+        }
+      );
+    }
+
+    // Priority değiştirme (sadece admin)
+    if (priority && !isAdmin) {
+      return errorResponse('Unauthorized: Only admins can change comment priority', 403);
+    }
+
     // Durum değiştirme (sadece admin)
     if (status && !isAdmin) {
       return errorResponse('Unauthorized: Only admins can change comment status', 403);
     }
 
-    if (status) {
-      if (!['pending', 'approved', 'rejected'].includes(status)) {
+    if (status || priority) {
+      if (status && !['pending', 'approved', 'rejected', 'spam'].includes(status)) {
         return errorResponse('Invalid status', 400);
       }
 
+      if (priority && !['low', 'normal', 'high'].includes(priority)) {
+        return errorResponse('Invalid priority', 400);
+      }
+
       // Yorumu güncelle
-      const updateQuery = 'UPDATE comments SET status = ?, updated_at = NOW() WHERE id = ?';
-      await executeQuery(updateQuery, [status, commentId]);
+      const updates: string[] = [];
+      const values: any[] = [];
+      
+      if (status) {
+        updates.push('status = ?');
+        values.push(status);
+      }
+      
+      if (priority) {
+        updates.push('priority = ?');
+        values.push(priority);
+      }
+      
+      updates.push('updated_at = NOW()');
+      values.push(commentId);
+      
+      const updateQuery = `UPDATE comments SET ${updates.join(', ')} WHERE id = ?`;
+      await executeQuery(updateQuery, values);
     }
 
     return successResponse(
-      { id: commentId, status },
-      'Comment status updated successfully',
+      { id: commentId, status, priority },
+      'Comment updated successfully',
       {
         'X-RateLimit-Limit': '100',
         'X-RateLimit-Remaining': rateLimit.remaining.toString(),

@@ -19,6 +19,9 @@ interface Comment {
   updated_at: string;
   book_title?: string;
   chapter_title?: string;
+  admin_reply?: string;
+  admin_reply_by?: string;
+  admin_reply_at?: string;
 }
 
 interface BookChapter {
@@ -46,6 +49,7 @@ export default function CommentsManager() {
   const [selectedComment, setSelectedComment] = useState<Comment | null>(null);
   const [bannedIPs, setBannedIPs] = useState<BannedIP[]>([]);
   const [showBannedIPsModal, setShowBannedIPsModal] = useState(false);
+  const [adminReply, setAdminReply] = useState('');
   const [filter, setFilter] = useState({
     status: 'all',
     priority: 'all',
@@ -318,6 +322,53 @@ export default function CommentsManager() {
     } catch (error) {
       console.error('Toggle hide comment error:', error);
       alert('Yorum gizlenirken hata oluştu!');
+    }
+  };
+
+  const submitAdminReply = async () => {
+    if (!selectedComment || !adminReply.trim()) {
+      alert('Lütfen bir yanıt yazın!');
+      return;
+    }
+
+    try {
+      const token = getAuthToken();
+      const response = await fetch(`/api/comments/${selectedComment.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          admin_reply: adminReply
+        })
+      });
+      
+      if (response.ok) {
+        alert('Yanıt başarıyla gönderildi!');
+        setAdminReply('');
+        loadComments();
+      } else {
+        alert('Yanıt gönderilemedi!');
+      }
+    } catch (error) {
+      console.error('Admin reply error:', error);
+      alert('Yanıt gönderilirken hata oluştu!');
+    }
+  };
+
+  const goToComment = (comment: Comment) => {
+    // Kitap yorumu
+    if (comment.book_id && !comment.chapter_id) {
+      window.open(`/kitaplar/${comment.book_id}#comments`, '_blank');
+    }
+    // Bölüm yorumu (satır olmayan)
+    else if (comment.chapter_id && !comment.line_number) {
+      window.open(`/kitaplar/${comment.book_id}/bolum/${comment.chapter_id}#comments`, '_blank');
+    }
+    // Satır yorumu
+    else if (comment.chapter_id && comment.line_number !== null) {
+      window.open(`/kitaplar/${comment.book_id}/bolum/${comment.chapter_id}?line=${comment.line_number}`, '_blank');
     }
   };
 
@@ -619,7 +670,47 @@ export default function CommentsManager() {
                     </div>
                   </div>
 
+                  {/* Admin Yanıt Alanı */}
+                  <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Admin Yanıtı
+                    </label>
+                    {selectedComment.admin_reply ? (
+                      <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded mb-3">
+                        <div className="text-sm text-gray-900 dark:text-white mb-1">
+                          {selectedComment.admin_reply}
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          Yanıtlayan: {selectedComment.admin_reply_by || 'Admin'} - {selectedComment.admin_reply_at ? new Date(selectedComment.admin_reply_at).toLocaleString('tr-TR') : ''}
+                        </div>
+                      </div>
+                    ) : null}
+                    <textarea
+                      value={adminReply}
+                      onChange={(e) => setAdminReply(e.target.value)}
+                      placeholder="Yoruma yanıt yazın..."
+                      rows={3}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm mb-2"
+                    />
+                    <button
+                      onClick={submitAdminReply}
+                      disabled={!adminReply.trim()}
+                      className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <i className="ri-reply-line mr-2"></i>
+                      Yanıt Gönder
+                    </button>
+                  </div>
+
                   <div className="pt-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
+                    <button
+                      onClick={() => goToComment(selectedComment)}
+                      className="w-full px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors font-medium"
+                    >
+                      <i className="ri-external-link-line mr-2"></i>
+                      Yoruma Git
+                    </button>
+
                     <button
                       onClick={() => toggleHideComment(selectedComment.id, selectedComment.is_hidden || false)}
                       className={`w-full px-4 py-2 text-white rounded hover:opacity-90 transition-colors font-medium ${
