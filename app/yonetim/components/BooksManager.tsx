@@ -358,7 +358,7 @@ export default function BooksManager() {
           book_id: bookId,
           title: chapterFormData.title,
           content: chapterFormData.content,
-          order: chapterFormData.order
+          order_number: chapterFormData.order
         })
       });
 
