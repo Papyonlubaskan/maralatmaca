@@ -875,12 +875,12 @@ export default function BooksManager() {
                       // 2 boş satırı paragraf ayırıcıya çevir
                       cleanedText = cleanedText.replace(/\n\s*\n/g, '§§PARAGRAPH§§');
                       
-                      // 2. Cümle sonu + newline → Paragraf sonu
-                      // Nokta, ünlem, soru işareti, tırnak + newline + büyük harf/boşluk
+                      // 2. Cümle sonu + newline → Paragraf sonu (SADECE büyük harfle başlayan kelimeler için)
+                      // Nokta, ünlem, soru işareti, tırnak + newline + büyük harf
                       cleanedText = cleanedText.replace(/([.!?"\)\]])\n+(\s*[A-ZÇĞİÖŞÜ""])/g, '$1§§PARAGRAPH§§$2');
                       
-                      // 3. İtalik metin sonu (örnek: "Bunu ona nasıl yapabildi?") + newline
-                      cleanedText = cleanedText.replace(/([.!?]")\n+(\s*\S)/g, '$1§§PARAGRAPH§§$2');
+                      // 3. İtalik metin sonu (örnek: "Bunu ona nasıl yapabildi?") + newline (SADECE büyük harfle başlayan)
+                      cleanedText = cleanedText.replace(/([.!?]")\n+(\s*[A-ZÇĞİÖŞÜ""])/g, '$1§§PARAGRAPH§§$2');
                       
                       // 4. Kalan tüm tek satır sonlarını boşluğa çevir (PDF'den gelen satır sonları)
                       cleanedText = cleanedText.replace(/\n/g, ' ');
@@ -894,7 +894,12 @@ export default function BooksManager() {
                       }
                       
                       // 7. Fazla boşlukları temizle (ama girinti boşluklarını koru)
+                      // Önce girinti boşluklarını korumak için marker'a çevir
+                      cleanedText = cleanedText.replace(/^(\s{5,})/gm, '§§INDENT§§');
+                      // Normal metin içindeki fazla boşlukları temizle
                       cleanedText = cleanedText.replace(/([^\n ]) {2,}([^\n ])/g, '$1 $2');
+                      // Girinti marker'larını geri çevir
+                      cleanedText = cleanedText.replace(/§§INDENT§§/g, '     ');
                       
                       // Cursor pozisyonuna yapıştır
                       const textarea = e.currentTarget;
