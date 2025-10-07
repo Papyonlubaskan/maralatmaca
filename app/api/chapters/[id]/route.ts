@@ -100,7 +100,7 @@ export async function PUT(
     await executeQuery(updateQuery, [
       updateData.title || '',
       updateData.content || '',
-      updateData.order || updateData.order_number || 1,
+      updateData.order_number || updateData.order || 1,
       chapterId
     ]);
 

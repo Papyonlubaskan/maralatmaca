@@ -318,7 +318,7 @@ export default function BooksManager() {
     setChapterFormData({
       title: chapter.title || '',
       content: chapter.content || '',
-      order: chapter.order || chapter.chapter_number || 1
+      order: chapter.order_number || chapter.order || chapter.chapter_number || 1
     });
     setShowChapterForm(true);
   };
@@ -744,13 +744,13 @@ export default function BooksManager() {
                   ) : (
                     <div className="space-y-3 max-h-64 overflow-y-auto">
                       {editingBook.chapters
-                        .sort((a: any, b: any) => (a.order || a.chapter_number || 0) - (b.order || b.chapter_number || 0))
+                        .sort((a: any, b: any) => (a.order_number || a.order || a.chapter_number || 0) - (b.order_number || b.order || b.chapter_number || 0))
                         .map((chapter: any) => (
                           <div key={chapter.id} className="bg-gray-50 rounded-lg p-4 flex items-center justify-between">
                             <div>
                               <h5 className="font-medium text-gray-900 dark:text-white">{chapter.title}</h5>
                               <p className="text-sm text-gray-600 dark:text-gray-400">
-                                Sıra: {chapter.order || chapter.chapter_number} • İçerik: {chapter.content?.length || 0} karakter
+                                Sıra: {chapter.order_number || chapter.order || chapter.chapter_number} • İçerik: {chapter.content?.length || 0} karakter
                               </p>
                             </div>
                             <div className="flex items-center space-x-2">
@@ -1111,7 +1111,7 @@ export default function BooksManager() {
                             <div>
                               <h5 className="font-medium text-gray-900 dark:text-white">{chapter.title}</h5>
                               <p className="text-sm text-gray-600 dark:text-gray-400">
-                                Sıra: {chapter.order || chapter.chapter_number} • İçerik:{' '}
+                                Sıra: {chapter.order_number || chapter.order || chapter.chapter_number} • İçerik:{' '}
                                 {chapter.content?.length || 0} karakter
                               </p>
                             </div>
