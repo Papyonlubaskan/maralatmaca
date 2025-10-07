@@ -884,26 +884,45 @@ export default function BooksManager() {
                       e.preventDefault();
                       const text = e.clipboardData.getData('text');
                       
-                      // İyileştirilmiş algoritma: Paragraf yapısını tam olarak koru
+                      // Basit ve güvenilir algoritma: Orijinal yapıyı mümkün olduğunca koru
                       let cleanedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
                       
-                      // 1. Önce paragrafları ayır (çift satır sonu veya daha fazla boşluk)
-                      const paragraphs = cleanedText.split(/\n\s*\n/);
+                      // Sadece satırları işle
+                      const lines = cleanedText.split('\n');
+                      const processedLines: string[] = [];
                       
-                      // 2. Her paragraftaki tek satır sonlarını boşluğa çevir
-                      const cleanedParagraphs = paragraphs.map(para => {
-                        // Paragraf içindeki tek satır sonlarını boşluğa çevir
-                        let cleaned = para.replace(/\n/g, ' ');
-                        // Fazla boşlukları temizle
-                        cleaned = cleaned.replace(/\s+/g, ' ');
-                        // Başındaki ve sonundaki boşlukları temizle
-                        cleaned = cleaned.trim();
-                        // Paragraf girintisi ekle
-                        return '     ' + cleaned;
-                      });
+                      for (let i = 0; i < lines.length; i++) {
+                        const line = lines[i];
+                        const trimmedLine = line.trim();
+                        
+                        // Boş satır - paragraf ayırıcı olarak koru
+                        if (trimmedLine === '') {
+                          // Önceki satır da boş değilse bir boş satır ekle
+                          if (processedLines.length > 0 && processedLines[processedLines.length - 1] !== '') {
+                            processedLines.push('');
+                          }
+                          continue;
+                        }
+                        
+                        // Önceki satır boş mu kontrol et (yeni paragraf başlangıcı)
+                        const isNewParagraph = processedLines.length === 0 || 
+                                               processedLines[processedLines.length - 1] === '' ||
+                                               (i > 0 && lines[i - 1].trim() === '');
+                        
+                        if (isNewParagraph) {
+                          // Yeni paragraf - girinti ile ekle
+                          processedLines.push('     ' + trimmedLine);
+                        } else {
+                          // Aynı paragrafın devamı - önceki satıra ekle
+                          if (processedLines.length > 0) {
+                            processedLines[processedLines.length - 1] += ' ' + trimmedLine;
+                          } else {
+                            processedLines.push('     ' + trimmedLine);
+                          }
+                        }
+                      }
                       
-                      // 3. Paragrafları çift satır sonuyla birleştir
-                      cleanedText = cleanedParagraphs.filter(p => p.trim().length > 0).join('\n\n');
+                      cleanedText = processedLines.join('\n');
                       
                       // Cursor pozisyonuna yapıştır
                       const textarea = e.currentTarget;
