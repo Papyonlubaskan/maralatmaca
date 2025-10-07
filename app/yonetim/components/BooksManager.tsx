@@ -855,43 +855,55 @@ export default function BooksManager() {
                 <div>
                   <label className="block text-sm font-medium text-gray-800 dark:text-gray-100 mb-2">
                     Bölüm İçeriği *
-                    <span className="text-xs text-gray-500 ml-2">(Paragraflar için çift Enter kullanın)</span>
+                    <span className="text-xs text-gray-500 ml-2">(Tab: girinti ekle, Çift Enter: yeni paragraf)</span>
                   </label>
                   <textarea
                     required
                     value={chapterFormData.content}
                     onChange={e => setChapterFormData({ ...chapterFormData, content: e.target.value })}
+                    onKeyDown={(e) => {
+                      // Tab tuşu ile paragraf girinti ekle
+                      if (e.key === 'Tab') {
+                        e.preventDefault();
+                        const textarea = e.currentTarget;
+                        const start = textarea.selectionStart;
+                        const end = textarea.selectionEnd;
+                        const currentValue = chapterFormData.content;
+                        
+                        // 5 boşluk ekle (paragraf girintisi)
+                        const newValue = currentValue.substring(0, start) + '     ' + currentValue.substring(end);
+                        setChapterFormData({ ...chapterFormData, content: newValue });
+                        
+                        // Cursor'ı girintinin sonuna taşı
+                        setTimeout(() => {
+                          textarea.selectionStart = textarea.selectionEnd = start + 5;
+                        }, 0);
+                      }
+                    }}
                     onPaste={(e) => {
                       e.preventDefault();
                       const text = e.clipboardData.getData('text');
                       
-                      // Yeni algoritma: Paragraf yapısını koruyarak temizle
+                      // İyileştirilmiş algoritma: Paragraf yapısını tam olarak koru
                       let cleanedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
                       
-                      // 1. Gerçek paragraf ayırıcıları (çift satır sonu) koru
-                      cleanedText = cleanedText.replace(/\n\s*\n\s*\n+/g, '\n\n');
-                      cleanedText = cleanedText.replace(/\n\s*\n/g, '\n\n');
+                      // 1. Önce paragrafları ayır (çift satır sonu veya daha fazla boşluk)
+                      const paragraphs = cleanedText.split(/\n\s*\n/);
                       
-                      // 2. Cümle sonu + newline + büyük harf → Paragraf sonu
-                      cleanedText = cleanedText.replace(/([.!?"\)\]])\n+(\s*[A-ZÇĞİÖŞÜ""])/g, '$1\n\n$2');
+                      // 2. Her paragraftaki tek satır sonlarını boşluğa çevir
+                      const cleanedParagraphs = paragraphs.map(para => {
+                        // Paragraf içindeki tek satır sonlarını boşluğa çevir
+                        let cleaned = para.replace(/\n/g, ' ');
+                        // Fazla boşlukları temizle
+                        cleaned = cleaned.replace(/\s+/g, ' ');
+                        // Başındaki ve sonundaki boşlukları temizle
+                        cleaned = cleaned.trim();
+                        // Paragraf girintisi ekle
+                        return '     ' + cleaned;
+                      });
                       
-                      // 3. Tek satır sonlarını boşluğa çevir (PDF satır sonları)
-                      cleanedText = cleanedText.replace(/([a-zçğıöşü])\n+([a-zçğıöşü])/g, '$1 $2');
-                      cleanedText = cleanedText.replace(/([a-zçğıöşü])\n+(\s*[a-zçğıöşü])/g, '$1 $2');
-                      
-                      // 4. Kalan tek satır sonlarını boşluğa çevir
-                      cleanedText = cleanedText.replace(/\n/g, ' ');
-                      
-                      // 5. Paragraf ayırıcılarını düzenle ve girinti ekle
-                      cleanedText = cleanedText.replace(/\n\n/g, '\n\n     ');
-                      
-                      // 6. İlk paragrafa girinti ekle
-                      if (cleanedText && !cleanedText.startsWith('     ')) {
-                        cleanedText = '     ' + cleanedText;
-                      }
-                      
-                      // 7. Fazla boşlukları temizle (girinti hariç)
-                      cleanedText = cleanedText.replace(/([^\n ]) {2,}([^\n ])/g, '$1 $2');
+                      // 3. Paragrafları çift satır sonuyla birleştir
+                      cleanedText = cleanedParagraphs.filter(p => p.trim().length > 0).join('\n\n');
                       
                       // Cursor pozisyonuna yapıştır
                       const textarea = e.currentTarget;
@@ -914,7 +926,7 @@ export default function BooksManager() {
                     }}
                     rows={20}
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono"
-                    placeholder="Bölüm içeriğini yazın veya yapıştırın...&#10;&#10;Paragraflar arasında çift Enter (boş satır) kullanın."
+                    placeholder="Bölüm içeriğini yazın veya yapıştırın...&#10;&#10;- Paragraflar arasında çift Enter kullanın&#10;- Tab tuşu ile girinti ekleyin"
                     style={{
                       whiteSpace: 'pre-wrap',
                       overflowWrap: 'break-word',
