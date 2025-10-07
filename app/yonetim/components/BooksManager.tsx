@@ -905,9 +905,24 @@ export default function BooksManager() {
                       
                       setChapterFormData({ ...chapterFormData, content: newValue });
                       
-                      // Cursor pozisyonunu ayarla
+                      // Cursor pozisyonunu ve scroll pozisyonunu ayarla
                       setTimeout(() => {
-                        textarea.selectionStart = textarea.selectionEnd = start + cleanedText.length;
+                        const newCursorPos = start + cleanedText.length;
+                        textarea.selectionStart = textarea.selectionEnd = newCursorPos;
+                        
+                        // Scroll pozisyonunu yeni cursor pozisyonuna ayarla
+                        const textareaHeight = textarea.clientHeight;
+                        const lineHeight = parseInt(getComputedStyle(textarea).lineHeight) || 20;
+                        
+                        // Cursor pozisyonuna göre satır numarasını hesapla
+                        const textBeforeCursor = textarea.value.substring(0, newCursorPos);
+                        const linesFromTop = (textBeforeCursor.match(/\n/g) || []).length;
+                        
+                        // Cursor'ı textarea'nın ortasında konumlandır
+                        const scrollTop = Math.max(0, (linesFromTop * lineHeight) - (textareaHeight / 2));
+                        
+                        textarea.scrollTop = scrollTop;
+                        textarea.focus();
                       }, 0);
                     }}
                     rows={20}
