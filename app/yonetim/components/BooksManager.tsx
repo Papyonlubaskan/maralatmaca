@@ -884,45 +884,12 @@ export default function BooksManager() {
                       e.preventDefault();
                       const text = e.clipboardData.getData('text');
                       
-                      // Basit ve güvenilir algoritma: Orijinal yapıyı mümkün olduğunca koru
-                      let cleanedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-                      
-                      // Sadece satırları işle
-                      const lines = cleanedText.split('\n');
-                      const processedLines: string[] = [];
-                      
-                      for (let i = 0; i < lines.length; i++) {
-                        const line = lines[i];
-                        const trimmedLine = line.trim();
-                        
-                        // Boş satır - paragraf ayırıcı olarak koru
-                        if (trimmedLine === '') {
-                          // Önceki satır da boş değilse bir boş satır ekle
-                          if (processedLines.length > 0 && processedLines[processedLines.length - 1] !== '') {
-                            processedLines.push('');
-                          }
-                          continue;
-                        }
-                        
-                        // Önceki satır boş mu kontrol et (yeni paragraf başlangıcı)
-                        const isNewParagraph = processedLines.length === 0 || 
-                                               processedLines[processedLines.length - 1] === '' ||
-                                               (i > 0 && lines[i - 1].trim() === '');
-                        
-                        if (isNewParagraph) {
-                          // Yeni paragraf - girinti ile ekle
-                          processedLines.push('     ' + trimmedLine);
-                        } else {
-                          // Aynı paragrafın devamı - önceki satıra ekle
-                          if (processedLines.length > 0) {
-                            processedLines[processedLines.length - 1] += ' ' + trimmedLine;
-                          } else {
-                            processedLines.push('     ' + trimmedLine);
-                          }
-                        }
-                      }
-                      
-                      cleanedText = processedLines.join('\n');
+                      // En basit algoritma: Sadece temel temizlik yap, yapıyı değiştirme
+                      let cleanedText = text
+                        .replace(/\r\n/g, '\n')  // Windows satır sonları
+                        .replace(/\r/g, '\n')    // Mac satır sonları
+                        .replace(/\u00A0/g, ' ') // Non-breaking space'leri normal boşluğa çevir
+                        .replace(/ {2,}/g, ' '); // Fazla boşlukları tek boşluğa indir
                       
                       // Cursor pozisyonuna yapıştır
                       const textarea = e.currentTarget;
@@ -941,7 +908,7 @@ export default function BooksManager() {
                         // Scroll'u en alta kaydır
                         textarea.scrollTop = textarea.scrollHeight;
                         textarea.focus();
-                      }, 100);
+                      }, 0);
                     }}
                     rows={20}
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono"
