@@ -164,7 +164,7 @@ export async function PUT(
       
       // Admin bilgisini al
       const adminInfo = adminCheck?.user;
-      const adminUsername = adminInfo?.username || 'Admin';
+      const adminUsername = adminInfo?.name || adminInfo?.email || 'Admin';
       
       const updateQuery = 'UPDATE comments SET admin_reply = ?, admin_reply_by = ?, admin_reply_at = NOW(), updated_at = NOW() WHERE id = ?';
       await executeQuery(updateQuery, [admin_reply, adminUsername, commentId]);
