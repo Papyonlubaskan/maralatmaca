@@ -865,41 +865,33 @@ export default function BooksManager() {
                       e.preventDefault();
                       const text = e.clipboardData.getData('text');
                       
-                      // PDF ve Word'den gelen metinleri düzenle
-                      // Tüm satır sonu türlerini normalize et (\r\n, \r, \n)
+                      // Yeni algoritma: Paragraf yapısını koruyarak temizle
                       let cleanedText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
                       
-                      // 1. Önce boş satırları (paragraf ayırıcı) korumak için marker'a çevir
-                      // 2+ boş satırı tek paragraf ayırıcıya çevir
-                      cleanedText = cleanedText.replace(/\n\s*\n\s*\n+/g, '§§PARAGRAPH§§');
-                      // 2 boş satırı paragraf ayırıcıya çevir
-                      cleanedText = cleanedText.replace(/\n\s*\n/g, '§§PARAGRAPH§§');
+                      // 1. Gerçek paragraf ayırıcıları (çift satır sonu) koru
+                      cleanedText = cleanedText.replace(/\n\s*\n\s*\n+/g, '\n\n');
+                      cleanedText = cleanedText.replace(/\n\s*\n/g, '\n\n');
                       
-                      // 2. Cümle sonu + newline → Paragraf sonu (SADECE büyük harfle başlayan kelimeler için)
-                      // Nokta, ünlem, soru işareti, tırnak + newline + büyük harf
-                      cleanedText = cleanedText.replace(/([.!?"\)\]])\n+(\s*[A-ZÇĞİÖŞÜ""])/g, '$1§§PARAGRAPH§§$2');
+                      // 2. Cümle sonu + newline + büyük harf → Paragraf sonu
+                      cleanedText = cleanedText.replace(/([.!?"\)\]])\n+(\s*[A-ZÇĞİÖŞÜ""])/g, '$1\n\n$2');
                       
-                      // 3. İtalik metin sonu (örnek: "Bunu ona nasıl yapabildi?") + newline (SADECE büyük harfle başlayan)
-                      cleanedText = cleanedText.replace(/([.!?]")\n+(\s*[A-ZÇĞİÖŞÜ""])/g, '$1§§PARAGRAPH§§$2');
+                      // 3. Tek satır sonlarını boşluğa çevir (PDF satır sonları)
+                      cleanedText = cleanedText.replace(/([a-zçğıöşü])\n+([a-zçğıöşü])/g, '$1 $2');
+                      cleanedText = cleanedText.replace(/([a-zçğıöşü])\n+(\s*[a-zçğıöşü])/g, '$1 $2');
                       
-                      // 4. Kalan tüm tek satır sonlarını boşluğa çevir (PDF'den gelen satır sonları)
+                      // 4. Kalan tek satır sonlarını boşluğa çevir
                       cleanedText = cleanedText.replace(/\n/g, ' ');
                       
-                      // 5. Marker'ları tekrar çift satır sonuna çevir ve paragraf girintisi ekle
-                      cleanedText = cleanedText.replace(/§§PARAGRAPH§§/g, '\n\n     '); // 5 boşluk girinti
+                      // 5. Paragraf ayırıcılarını düzenle ve girinti ekle
+                      cleanedText = cleanedText.replace(/\n\n/g, '\n\n     ');
                       
-                      // 6. İlk paragrafın başına da girinti ekle (eğer boşlukla başlamıyorsa)
-                      if (cleanedText && !cleanedText.startsWith(' ') && !cleanedText.startsWith('\n')) {
-                        cleanedText = '     ' + cleanedText; // İlk paragrafa da girinti
+                      // 6. İlk paragrafa girinti ekle
+                      if (cleanedText && !cleanedText.startsWith('     ')) {
+                        cleanedText = '     ' + cleanedText;
                       }
                       
-                      // 7. Fazla boşlukları temizle (ama girinti boşluklarını koru)
-                      // Önce girinti boşluklarını korumak için marker'a çevir
-                      cleanedText = cleanedText.replace(/^(\s{5,})/gm, '§§INDENT§§');
-                      // Normal metin içindeki fazla boşlukları temizle
+                      // 7. Fazla boşlukları temizle (girinti hariç)
                       cleanedText = cleanedText.replace(/([^\n ]) {2,}([^\n ])/g, '$1 $2');
-                      // Girinti marker'larını geri çevir
-                      cleanedText = cleanedText.replace(/§§INDENT§§/g, '     ');
                       
                       // Cursor pozisyonuna yapıştır
                       const textarea = e.currentTarget;
@@ -910,25 +902,15 @@ export default function BooksManager() {
                       
                       setChapterFormData({ ...chapterFormData, content: newValue });
                       
-                      // Cursor pozisyonunu ve scroll pozisyonunu ayarla
+                      // Cursor ve scroll pozisyonunu ayarla
                       setTimeout(() => {
                         const newCursorPos = start + cleanedText.length;
                         textarea.selectionStart = textarea.selectionEnd = newCursorPos;
                         
-                        // Scroll pozisyonunu yeni cursor pozisyonuna ayarla
-                        const textareaHeight = textarea.clientHeight;
-                        const lineHeight = parseInt(getComputedStyle(textarea).lineHeight) || 20;
-                        
-                        // Cursor pozisyonuna göre satır numarasını hesapla
-                        const textBeforeCursor = textarea.value.substring(0, newCursorPos);
-                        const linesFromTop = (textBeforeCursor.match(/\n/g) || []).length;
-                        
-                        // Cursor'ı textarea'nın ortasında konumlandır
-                        const scrollTop = Math.max(0, (linesFromTop * lineHeight) - (textareaHeight / 2));
-                        
-                        textarea.scrollTop = scrollTop;
+                        // Scroll'u en alta kaydır
+                        textarea.scrollTop = textarea.scrollHeight;
                         textarea.focus();
-                      }, 0);
+                      }, 100);
                     }}
                     rows={20}
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono"
