@@ -925,17 +925,54 @@ export default function BooksManager() {
                       e.preventDefault();
                       const text = e.clipboardData.getData('text');
                       
-                      // SADECE MİNİMAL TEMİZLİK - YAPISAL DEĞİŞİKLİK YOK!
+                      // 1. Temel karakter temizliği
                       let cleanedText = text
                         .replace(/\r\n/g, '\n')  // Windows satır sonları
                         .replace(/\r/g, '\n')    // Mac satır sonları
                         .replace(/\u00A0/g, ' ') // Non-breaking space
-                        .replace(/\uFEFF/g, ''); // BOM karakteri
+                        .replace(/\uFEFF/g, '')  // BOM karakteri
+                        .replace(/\u2013/g, '-') // En dash
+                        .replace(/\u2014/g, '--') // Em dash
+                        .replace(/\u2018/g, "'") // Left single quote
+                        .replace(/\u2019/g, "'") // Right single quote
+                        .replace(/\u201C/g, '"') // Left double quote
+                        .replace(/\u201D/g, '"'); // Right double quote
                       
-                      // HİÇBİR DEĞİŞİKLİK YAPMA!
-                      // Tüm satır sonları, paragraflar, boşluklar olduğu gibi korunuyor
+                      // 2. Paragrafları ayır (çift satır sonu ile)
+                      const paragraphs = cleanedText.split(/\n\s*\n/);
                       
-                      // Cursor pozisyonuna yapıştır
+                      // 3. Her paragrafı işle
+                      const processedParagraphs = paragraphs.map(paragraph => {
+                        let cleanParagraph = paragraph.trim();
+                        
+                        // 4. Paragraf başında girinti kontrolü
+                        const indentMatch = cleanParagraph.match(/^(\s+)/);
+                        const hasIndent = indentMatch && indentMatch[1].length > 0;
+                        
+                        // 5. Cümle ortası satır sonlarını düzelt (PDF'den gelen)
+                        // Ama cümle sonlarını koru
+                        cleanParagraph = cleanParagraph.replace(/([a-zığüşöçĞÜŞİÖÇ])\n([a-zığüşöçĞÜŞİÖÇ])/g, '$1 $2');
+                        
+                        // 6. Birden fazla boşluğu tek boşluğa çevir
+                        cleanParagraph = cleanParagraph.replace(/\s+/g, ' ');
+                        
+                        // 7. Girinti varsa koru (4 boşluk)
+                        if (hasIndent) {
+                          cleanParagraph = '    ' + cleanParagraph.trim();
+                        }
+                        
+                        return cleanParagraph;
+                      });
+                      
+                      // 8. Paragrafları birleştir
+                      cleanedText = processedParagraphs
+                        .filter(p => p.length > 0) // Boş paragrafları kaldır
+                        .join('\n\n');
+                      
+                      // 9. Başında ve sonundaki gereksiz boşlukları temizle
+                      cleanedText = cleanedText.trim();
+                      
+                      // 10. Cursor pozisyonuna yapıştır
                       const textarea = e.currentTarget;
                       const start = textarea.selectionStart;
                       const end = textarea.selectionEnd;
@@ -944,7 +981,7 @@ export default function BooksManager() {
                       
                       setChapterFormData({ ...chapterFormData, content: newValue });
                       
-                      // Cursor ve scroll pozisyonunu ayarla
+                      // 11. Cursor ve scroll pozisyonunu ayarla
                       setTimeout(() => {
                         const newCursorPos = start + cleanedText.length;
                         textarea.selectionStart = textarea.selectionEnd = newCursorPos;
@@ -956,7 +993,7 @@ export default function BooksManager() {
                     }}
                     rows={20}
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono"
-                    placeholder="Bölüm içeriğini yazın veya yapıştırın...&#10;&#10;- Paragraflar arasında çift Enter kullanın&#10;- Tab tuşu ile girinti ekleyin"
+                    placeholder="Bölüm içeriğini yazın veya yapıştırın...&#10;&#10;📋 PDF'den kopyala-yapıştır yapın&#10;📝 Paragraflar otomatik düzenlenir&#10;🔤 Girintiler korunur&#10;📖 Cümle bütünlüğü sağlanır"
                     style={{
                       whiteSpace: 'pre-wrap',
                       overflowWrap: 'break-word',
@@ -964,7 +1001,7 @@ export default function BooksManager() {
                     }}
                   />
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                    💡 İpucu: PDF/Word/Notes'tan kopyala-yapıştır yapın. Paragraflar otomatik düzenlenir.
+                    💡 İpucu: PDF'den kopyala-yapıştır yapın. Orijinal format korunur, paragraflar düzenlenir, girintiler korunur.
                   </p>
                 </div>
 
