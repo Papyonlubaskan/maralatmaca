@@ -361,7 +361,7 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
   };
 
   // Satır yorumlarını yükle  
-  const loadLineComments = async () => {
+  const loadLineComments = async (lineNumber?: number) => {
     if (!chapter) return;
     
     try {
