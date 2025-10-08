@@ -38,6 +38,9 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
   const [editCommentText, setEditCommentText] = useState('');
   const [editingLineComment, setEditingLineComment] = useState<any>(null);
   const [editLineCommentText, setEditLineCommentText] = useState('');
+  const [replyingToComment, setReplyingToComment] = useState<any>(null);
+  const [replyText, setReplyText] = useState('');
+  const [replyName, setReplyName] = useState('');
   const [chapterLikes, setChapterLikes] = useState({ total: 0, isLiked: false });
   const [lineLikes, setLineLikes] = useState<{[key: number]: { total: number, isLiked: boolean }}>({});
   const [lineLikesLoaded, setLineLikesLoaded] = useState(false);
@@ -145,17 +148,27 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
           loadLineComments(lineNumber);
         }
         
-        // Belirli yorumu vurgula (opsiyonel)
+        // Belirli yorumu vurgula ve scroll et
         setTimeout(() => {
           const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
           if (commentElement) {
+            // Yorumu görünür alana getir
             commentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            commentElement.classList.add('bg-yellow-100', 'dark:bg-yellow-900');
+            
+            // Vurgulama efekti
+            commentElement.classList.add('ring-2', 'ring-yellow-400', 'bg-yellow-50', 'dark:bg-yellow-900/30');
+            
+            // 3 saniye sonra vurgulamayı kaldır
             setTimeout(() => {
-              commentElement.classList.remove('bg-yellow-100', 'dark:bg-yellow-900');
+              commentElement.classList.remove('ring-2', 'ring-yellow-400', 'bg-yellow-50', 'dark:bg-yellow-900/30');
             }, 3000);
+          } else {
+            // Eğer yorum bulunamazsa, yorumları yeniden yükle
+            if (lineNumber !== null && lineNumber !== undefined) {
+              loadLineComments(lineNumber);
+            }
           }
-        }, 500);
+        }, 1000);
       }
     };
 
@@ -633,6 +646,46 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
       alert('Yorum eklenemedi.');
     } finally {
       setLineCommentLoading(false);
+    }
+  };
+
+  // Yorum yanıtı gönder
+  const sendReply = async (parentCommentId: number) => {
+    if (!replyText.trim() || !replyName.trim() || !chapter || !book) return;
+    
+    try {
+      const response = await fetch(`/api/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chapterId: chapter.id,
+          bookId: book.id,
+          lineNumber: activeLine,
+          userName: replyName.trim(),
+          content: replyText.trim(),
+          userId: currentUserId,
+          parentId: parentCommentId // Yanıt için parent ID
+        })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          // Yanıtı yorum listesine ekle
+          setLineComments(prev => {
+            const updated = { ...prev };
+            if (!updated[activeLine]) updated[activeLine] = [];
+            updated[activeLine] = [result.data, ...updated[activeLine]];
+            return updated;
+          });
+          setReplyText('');
+          setReplyName('');
+          setReplyingToComment(null);
+        }
+      }
+    } catch (error) {
+      console.error('Reply error:', error);
+      alert('Yanıt gönderilemedi.');
     }
   };
 
@@ -1387,7 +1440,7 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
                       </h4>
                       <div className="space-y-4">
                         {getFilteredLineComments(activeLine).map((comment, index) => (
-                          <div key={comment.id || index} className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                          <div key={comment.id || index} data-comment-id={comment.id} className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
                             <div className="flex items-start justify-between mb-2">
                               <div className="flex items-center space-x-2">
                                 <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center flex-shrink-0">
@@ -1412,24 +1465,35 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
                                 </div>
                               </div>
                               
-                              {comment.user_id === currentUserId && !comment.is_hidden && (
-                                <div className="flex items-center space-x-1">
-                                  <button
-                                    onClick={() => startEditingLineComment(comment)}
-                                    className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-md transition-all duration-200"
-                                    title="Yorumu Düzenle"
-                                  >
-                                    <i className="ri-edit-line text-xs"></i>
-                                  </button>
-                                  <button
-                                    onClick={() => deleteLineComment(comment.id, activeLine)}
-                                    className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-md transition-all duration-200"
-                                    title="Yorumu Sil"
-                                  >
-                                    <i className="ri-delete-bin-line text-xs"></i>
-                                  </button>
-                                </div>
-                              )}
+                              <div className="flex items-center space-x-1">
+                                {/* Yanıt Butonu */}
+                                <button
+                                  onClick={() => setReplyingToComment(replyingToComment?.id === comment.id ? null : comment)}
+                                  className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-md transition-all duration-200"
+                                  title="Yanıtla"
+                                >
+                                  <i className="ri-reply-line text-xs"></i>
+                                </button>
+                                
+                                {comment.user_id === currentUserId && !comment.is_hidden && (
+                                  <>
+                                    <button
+                                      onClick={() => startEditingLineComment(comment)}
+                                      className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-md transition-all duration-200"
+                                      title="Yorumu Düzenle"
+                                    >
+                                      <i className="ri-edit-line text-xs"></i>
+                                    </button>
+                                    <button
+                                      onClick={() => deleteLineComment(comment.id, activeLine)}
+                                      className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-md transition-all duration-200"
+                                      title="Yorumu Sil"
+                                    >
+                                      <i className="ri-delete-bin-line text-xs"></i>
+                                    </button>
+                                  </>
+                                )}
+                              </div>
                               {comment.user_id === currentUserId && comment.is_hidden && (
                                 <span className="text-xs text-gray-400 dark:text-gray-500 italic">
                                   (Gizli)
@@ -1468,7 +1532,100 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
                                 </div>
                               </div>
                             ) : (
-                              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{comment.content}</p>
+                              <div>
+                                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{comment.content}</p>
+                                
+                                {/* Admin Yanıtı */}
+                                {comment.admin_reply && (
+                                  <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-l-4 border-blue-500">
+                                    <div className="flex items-start space-x-2">
+                                      <div className="w-6 h-6 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <i className="ri-admin-line text-blue-600 dark:text-blue-400 text-xs"></i>
+                                      </div>
+                                      <div className="flex-1">
+                                        <div className="flex items-center space-x-2 mb-1">
+                                          <span className="text-blue-600 dark:text-blue-400 font-semibold text-sm">
+                                            {comment.admin_reply_by || 'Admin'}
+                                          </span>
+                                          <span className="text-blue-500 dark:text-blue-400 text-xs">
+                                            Yanıt
+                                          </span>
+                                        </div>
+                                        <p className="text-blue-800 dark:text-blue-200 text-sm leading-relaxed">
+                                          {comment.admin_reply}
+                                        </p>
+                                        {comment.admin_reply_at && (
+                                          <span className="text-blue-500 dark:text-blue-400 text-xs">
+                                            {new Date(comment.admin_reply_at).toLocaleDateString('tr-TR', {
+                                              year: 'numeric',
+                                              month: 'short',
+                                              day: 'numeric',
+                                              hour: '2-digit',
+                                              minute: '2-digit'
+                                            })}
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                            
+                            {/* Yanıt Formu */}
+                            {replyingToComment?.id === comment.id && (
+                              <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                                <div className="space-y-3">
+                                  <div className="flex items-center space-x-2">
+                                    <i className="ri-reply-line text-green-600 dark:text-green-400"></i>
+                                    <span className="text-green-700 dark:text-green-300 text-sm font-medium">
+                                      {comment.user_name} yorumuna yanıt veriyorsunuz
+                                    </span>
+                                  </div>
+                                  
+                                  <input
+                                    type="text"
+                                    value={replyName}
+                                    onChange={(e) => setReplyName(e.target.value)}
+                                    placeholder="İsminiz"
+                                    className="w-full px-3 py-2 border border-green-200 dark:border-green-700 rounded-lg focus:outline-none focus:border-green-500 dark:bg-gray-700 dark:text-white text-sm"
+                                  />
+                                  
+                                  <textarea
+                                    value={replyText}
+                                    onChange={(e) => setReplyText(e.target.value)}
+                                    placeholder="Yanıtınızı yazın..."
+                                    maxLength={500}
+                                    rows={3}
+                                    className="w-full p-3 border border-green-200 dark:border-green-700 rounded-lg resize-none focus:outline-none focus:border-green-500 dark:bg-gray-700 dark:text-white text-sm"
+                                  />
+                                  
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-xs text-green-600 dark:text-green-400">
+                                      {replyText.length}/500
+                                    </span>
+                                    <div className="flex items-center space-x-2">
+                                      <button
+                                        onClick={() => {
+                                          setReplyingToComment(null);
+                                          setReplyText('');
+                                          setReplyName('');
+                                        }}
+                                        className="px-3 py-1 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-full hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-xs"
+                                      >
+                                        İptal
+                                      </button>
+                                      <button
+                                        onClick={() => sendReply(comment.id)}
+                                        disabled={!replyText.trim() || !replyName.trim()}
+                                        className="px-3 py-1 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs"
+                                      >
+                                        Yanıt Gönder
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
                             )}
                           </div>
                         ))}

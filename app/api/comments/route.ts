@@ -180,7 +180,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    let { bookId, chapterId, userName, userEmail, userId, content, lineNumber } = await request.json();
+    let { bookId, chapterId, userName, userEmail, userId, content, lineNumber, parentId } = await request.json();
     
     if ((!bookId && !chapterId) || !content) {
       return validationErrorResponse(['BookId or chapterId and content are required']);
@@ -277,10 +277,10 @@ export async function POST(request: NextRequest) {
       return errorResponse('Şüpheli aktivite tespit edildi. IP adresiniz otomatik olarak yasaklandı.', 403);
     }
 
-    // Yorum ekle - spam tespiti + IP + fingerprint
+    // Yorum ekle - spam tespiti + IP + fingerprint + parent_id
     const insertQuery = `
-      INSERT INTO comments (book_id, chapter_id, user_name, user_email, user_id, user_ip, user_fingerprint, content, line_number, status, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+      INSERT INTO comments (book_id, chapter_id, user_name, user_email, user_id, user_ip, user_fingerprint, content, line_number, parent_id, status, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
     `;
     
     const result = await executeQuery(insertQuery, [
@@ -293,6 +293,7 @@ export async function POST(request: NextRequest) {
       fingerprint, // Fingerprint kaydet
       sanitizedContent,
       lineNumber !== undefined ? lineNumber : null,
+      parentId || null, // Parent comment ID
       commentStatus // 'approved', 'pending', veya 'spam'
     ]);
 
