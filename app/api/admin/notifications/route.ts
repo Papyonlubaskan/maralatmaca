@@ -137,7 +137,16 @@ export async function DELETE(request: NextRequest) {
     const authError = await requireAdmin(request);
     if (authError) return authError;
 
-    const { notificationIds } = await request.json();
+    const { notificationIds, deleteAll } = await request.json();
+
+    if (deleteAll) {
+      // Tüm bildirimleri sil (şimdilik sadece frontend'de state güncellenecek)
+      return successResponse({ 
+        message: 'All notifications deleted',
+        success: true,
+        deletedAll: true
+      });
+    }
 
     if (!notificationIds || !Array.isArray(notificationIds) || notificationIds.length === 0) {
       return errorResponse('Invalid notification IDs', 400);

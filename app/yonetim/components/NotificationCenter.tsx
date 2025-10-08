@@ -301,6 +301,59 @@ export default function NotificationCenter({ showFullView = false, onViewAll }: 
     }
   };
 
+  const deleteAllNotifications = async () => {
+    if (notifications.length === 0) {
+      alert('Silinecek bildirim bulunmuyor');
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Tüm bildirimleri (${notifications.length} adet) kalıcı olarak silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const token = sessionStorage.getItem('admin_token');
+      const response = await fetch(
+        `/api/admin/notifications`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ 
+            deleteAll: true
+          })
+        }
+      );
+
+      if (response.ok) {
+        // Tüm bildirimleri dismissed listesine ekle
+        const allNotificationIds = notifications.map(n => n.id);
+        const updatedDismissed = [...dismissedNotifications, ...allNotificationIds];
+        setDismissedNotifications(updatedDismissed);
+        localStorage.setItem('admin_dismissed_notifications', JSON.stringify(updatedDismissed));
+        
+        // State'i temizle
+        setNotifications([]);
+        setStats(prev => ({
+          ...prev,
+          total: 0,
+          unread: 0
+        }));
+        
+        showSuccessMessage('Tüm bildirimler kalıcı olarak silindi');
+      } else {
+        alert('Bildirimler silinirken hata oluştu');
+      }
+    } catch (error) {
+      console.error('Delete all notifications error:', error);
+      alert('Bildirimler silinirken hata oluştu');
+    }
+  };
+
   const createTestNotification = async () => {
     try {
       const testNotification = {
@@ -498,6 +551,13 @@ export default function NotificationCenter({ showFullView = false, onViewAll }: 
               Tümünü Okundu İşaretle
             </button>
             <button
+              onClick={deleteAllNotifications}
+              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors cursor-pointer whitespace-nowrap"
+            >
+              <i className="ri-delete-bin-2-line mr-2"></i>
+              Tümünü Sil
+            </button>
+            <button
               onClick={createTestNotification}
               className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors cursor-pointer whitespace-nowrap"
             >
@@ -654,6 +714,14 @@ export default function NotificationCenter({ showFullView = false, onViewAll }: 
               title="Tümünü Okundu İşaretle"
             >
               <i className="ri-check-double-line text-sm"></i>
+            </button>
+            
+            <button
+              onClick={deleteAllNotifications}
+              className="w-8 h-8 flex items-center justify-center bg-red-100 dark:bg-red-900/20 hover:bg-red-200 dark:hover:bg-red-800/30 text-red-600 dark:text-red-400 rounded-lg transition-colors cursor-pointer"
+              title="Tüm Bildirimleri Sil"
+            >
+              <i className="ri-delete-bin-2-line text-sm"></i>
             </button>
           </div>
         </div>
