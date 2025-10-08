@@ -13,12 +13,6 @@
   "categories": ["books", "literature", "education"],
   "icons": [
     {
-      "src": "/maral-logo.jpg",
-      "sizes": "any",
-      "type": "image/jpeg",
-      "purpose": "any"
-    },
-    {
       "src": "/favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
