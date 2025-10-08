@@ -12,19 +12,24 @@ export default function Icon() {
     (
       <div
         style={{
-          fontSize: 24,
-          background: '#f97316',
           width: '100%',
           height: '100%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: 'white',
-          fontWeight: 'bold',
+          background: 'white',
           borderRadius: '4px',
         }}
       >
-        M
+        <img
+          src="https://maralatmaca.com/logo.jpg"
+          alt="Maral Atmaca"
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+          }}
+        />
       </div>
     ),
     {

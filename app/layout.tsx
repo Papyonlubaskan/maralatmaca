@@ -84,6 +84,15 @@ export const metadata: Metadata = {
   verification: {
     google: 'google-site-verification-code',
   },
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: '32x32', type: 'image/x-icon' },
+      { url: '/icon.png', sizes: 'any', type: 'image/png' },
+      { url: '/logo.jpg', sizes: 'any', type: 'image/jpeg' }
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/logo.jpg',
+  },
   other: {
     'revisit-after': '7 days',
     'distribution': 'global',
