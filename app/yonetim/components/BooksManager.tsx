@@ -273,6 +273,7 @@ export default function BooksManager() {
           setEditingBook(newBook);
           setFormData({
             title: newBook.title || '',
+            slug: newBook.slug || '',
             description: newBook.description || '',
             content: newBook.content || '',
             cover_image_url: newBook.cover_image_url || newBook.cover_image || '',
@@ -924,15 +925,28 @@ export default function BooksManager() {
                       e.preventDefault();
                       const text = e.clipboardData.getData('text');
                       
-                      // MİNİMAL TEMİZLİK: Sadece platform uyumluluğu için
+                      // PDF'den kopyalanan metinleri düzelt
                       let cleanedText = text
                         .replace(/\r\n/g, '\n')  // Windows satır sonları
                         .replace(/\r/g, '\n')    // Mac satır sonları
                         .replace(/\u00A0/g, ' ') // Non-breaking space
-                        .replace(/\uFEFF/g, ''); // BOM karakteri
+                        .replace(/\uFEFF/g, '')  // BOM karakteri
+                        .replace(/\u2013/g, '-') // En dash
+                        .replace(/\u2014/g, '--') // Em dash
+                        .replace(/\u2018/g, "'") // Left single quote
+                        .replace(/\u2019/g, "'") // Right single quote
+                        .replace(/\u201C/g, '"') // Left double quote
+                        .replace(/\u201D/g, '"'); // Right double quote
                       
-                      // YAPISAL DEĞİŞİKLİK YOK!
-                      // Tüm boşluklar, paragraflar, girintiler olduğu gibi korunuyor
+                      // PDF'den gelen cümle ortası satır sonlarını düzelt
+                      // Tek satır sonlarını boşluğa çevir (cümle içi kesintileri düzelt)
+                      cleanedText = cleanedText.replace(/([a-zığüşöçĞÜŞİÖÇ])\n([a-zığüşöçĞÜŞİÖÇ])/g, '$1 $2');
+                      
+                      // Çift satır sonlarını koru (paragraf ayraçları)
+                      cleanedText = cleanedText.replace(/\n{3,}/g, '\n\n'); // 3+ satır sonunu 2'ye indir
+                      
+                      // Başında ve sonundaki gereksiz boşlukları temizle
+                      cleanedText = cleanedText.trim();
                       
                       // Cursor pozisyonuna yapıştır
                       const textarea = e.currentTarget;
