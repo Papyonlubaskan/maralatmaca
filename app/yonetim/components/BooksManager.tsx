@@ -31,7 +31,8 @@ export default function BooksManager() {
     amazon_link: '',
     dr_link: '',
     idefix_link: '',
-    author: 'Maral Atmaca'
+    author: 'Maral Atmaca',
+    slug: ''
   });
 
   const [chapterFormData, setChapterFormData] = useState({
@@ -58,6 +59,22 @@ export default function BooksManager() {
     setTimeout(() => setMessage(''), 4000);
   };
 
+  // Otomatik slug oluşturma
+  const generateSlug = (title: string) => {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-ğüşıöçĞÜŞİÖÇ]/g, '')
+      .replace(/[ğĞ]/g, 'g')
+      .replace(/[üÜ]/g, 'u')
+      .replace(/[şŞ]/g, 's')
+      .replace(/[ıİ]/g, 'i')
+      .replace(/[öÖ]/g, 'o')
+      .replace(/[çÇ]/g, 'c')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim();
+  };
+
   const resetForm = () => {
     setFormData({
       title: '',
@@ -69,7 +86,8 @@ export default function BooksManager() {
       amazon_link: '',
       dr_link: '',
       idefix_link: '',
-      author: 'Maral Atmaca'
+      author: 'Maral Atmaca',
+      slug: ''
     });
     setEditingBook(null);
     setShowForm(false);
@@ -606,7 +624,11 @@ export default function BooksManager() {
                   type="text"
                   required={!editingBook}
                   value={formData.title}
-                  onChange={e => setFormData({ ...formData, title: e.target.value })}
+                  onChange={e => {
+                    const newTitle = e.target.value;
+                    const newSlug = generateSlug(newTitle);
+                    setFormData({ ...formData, title: newTitle, slug: newSlug });
+                  }}
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="Kitap başlığını girin"
                 />
@@ -622,6 +644,23 @@ export default function BooksManager() {
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="Yazar adı (varsayılan: Maral Atmaca)"
                 />
+              </div>
+
+              {/* Slug */}
+              <div>
+                <label className="block text-sm font-medium text-gray-800 dark:text-gray-100 mb-2">
+                  URL Slug (otomatik oluşturulur)
+                </label>
+                <input
+                  type="text"
+                  value={formData.slug}
+                  onChange={e => setFormData({ ...formData, slug: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  placeholder="url-slug-otomatik-olusur"
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  URL'de kullanılacak slug. Başlık yazıldığında otomatik oluşturulur.
+                </p>
               </div>
 
               {/* Description */}
