@@ -358,17 +358,35 @@ export default function CommentsManager() {
   };
 
   const goToComment = (comment: Comment) => {
+    let url = '';
+    
     // Kitap yorumu
     if (comment.book_id && !comment.chapter_id) {
-      window.open(`/kitaplar/${comment.book_id}#comments`, '_blank');
+      url = `/kitaplar/${comment.book_id}#comments`;
     }
     // Bölüm yorumu (satır olmayan)
     else if (comment.chapter_id && !comment.line_number) {
-      window.open(`/kitaplar/${comment.book_id}/bolum/${comment.chapter_id}#comments`, '_blank');
+      url = `/kitaplar/${comment.book_id}/bolum/${comment.chapter_id}#comments`;
     }
     // Satır yorumu
     else if (comment.chapter_id && comment.line_number !== null) {
-      window.open(`/kitaplar/${comment.book_id}/bolum/${comment.chapter_id}?line=${comment.line_number}`, '_blank');
+      url = `/kitaplar/${comment.book_id}/bolum/${comment.chapter_id}?line=${comment.line_number}&commentId=${comment.id}`;
+    }
+    
+    if (url) {
+      // Yeni sekmede aç ve yorum panelini otomatik aç
+      const newWindow = window.open(url, '_blank');
+      
+      // Yorum panelini açmak için localStorage'a bilgi gönder
+      if (newWindow) {
+        newWindow.addEventListener('load', () => {
+          newWindow.postMessage({
+            type: 'OPEN_COMMENT',
+            commentId: comment.id,
+            lineNumber: comment.line_number
+          }, '*');
+        });
+      }
     }
   };
 

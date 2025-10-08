@@ -41,6 +41,51 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
   const [chapterLikes, setChapterLikes] = useState({ total: 0, isLiked: false });
   const [lineLikes, setLineLikes] = useState<{[key: number]: { total: number, isLiked: boolean }}>({});
   const [lineLikesLoaded, setLineLikesLoaded] = useState(false);
+  const [readingProgress, setReadingProgress] = useState(0);
+
+  // Okuma ilerlemesini kaydet
+  const saveReadingProgress = async (lineNumber?: number) => {
+    if (!currentUserId || !book || !chapter) return;
+
+    try {
+      const progressPercentage = lineNumber ? 
+        Math.min(100, Math.max(0, (lineNumber / chapter.content.split('\n').length) * 100)) : 
+        readingProgress;
+
+      await fetch('/api/reading-history', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: currentUserId,
+          bookId: book.id,
+          chapterId: chapter.id,
+          lineNumber: lineNumber || null,
+          progressPercentage: progressPercentage
+        })
+      });
+    } catch (error) {
+      console.error('Error saving reading progress:', error);
+    }
+  };
+
+  // Scroll pozisyonuna göre okuma ilerlemesini hesapla
+  const handleScroll = () => {
+    if (!contentRef.current) return;
+
+    const element = contentRef.current;
+    const scrollTop = element.scrollTop;
+    const scrollHeight = element.scrollHeight - element.clientHeight;
+    const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+    
+    setReadingProgress(progress);
+    
+    // Her %10'da bir kaydet
+    if (Math.floor(progress / 10) !== Math.floor(readingProgress / 10)) {
+      saveReadingProgress();
+    }
+  };
 
   useEffect(() => {
     // Kullanıcı ID'sini oluştur
@@ -53,6 +98,68 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
     
     loadChapterData();
   }, [bookId, bolumId]);
+
+  useEffect(() => {
+    // URL'den commentId parametresini kontrol et
+    const urlParams = new URLSearchParams(window.location.search);
+    const commentId = urlParams.get('commentId');
+    const lineNumber = urlParams.get('line');
+    
+    if (commentId && lineNumber) {
+      // Yorum panelini aç
+      setShowSidebar(true);
+      setSelectedLine(parseInt(lineNumber));
+      setActiveLine(parseInt(lineNumber));
+      
+      // O satırın yorumlarını yükle
+      setTimeout(() => {
+        loadLineComments(parseInt(lineNumber));
+      }, 1000);
+    }
+
+    // Admin panelinden gelen yorum açma mesajını dinle
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data.type === 'OPEN_COMMENT') {
+        const { commentId, lineNumber } = event.data;
+        
+        // Yorum panelini aç
+        setShowSidebar(true);
+        
+        // Eğer satır yorumu ise, o satırı seç
+        if (lineNumber !== null && lineNumber !== undefined) {
+          setSelectedLine(lineNumber);
+          setActiveLine(lineNumber);
+          
+          // O satırın yorumlarını yükle
+          loadLineComments(lineNumber);
+        }
+        
+        // Belirli yorumu vurgula (opsiyonel)
+        setTimeout(() => {
+          const commentElement = document.querySelector(`[data-comment-id="${commentId}"]`);
+          if (commentElement) {
+            commentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            commentElement.classList.add('bg-yellow-100', 'dark:bg-yellow-900');
+            setTimeout(() => {
+              commentElement.classList.remove('bg-yellow-100', 'dark:bg-yellow-900');
+            }, 3000);
+          }
+        }, 500);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
+  // Scroll event listener'ını ekle
+  useEffect(() => {
+    const element = contentRef.current;
+    if (element) {
+      element.addEventListener('scroll', handleScroll);
+      return () => element.removeEventListener('scroll', handleScroll);
+    }
+  }, [readingProgress]);
 
   useEffect(() => {
     if (currentUserId && chapter) {
@@ -464,6 +571,9 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
       setActiveLine(lineIndex);
       setSelectedLine(lineIndex);
       setShowSidebar(true);
+      
+      // Okuma ilerlemesini kaydet
+      saveReadingProgress(lineIndex);
     }
   };
 

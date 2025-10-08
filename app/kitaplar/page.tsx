@@ -23,6 +23,7 @@ function BooksPageContent() {
     hasMore: false
   });
   const [searchQuery, setSearchQuery] = useState('');
+  const [readingHistory, setReadingHistory] = useState<any[]>([]);
   
   const searchParams = useSearchParams();
 
@@ -44,8 +45,25 @@ function BooksPageContent() {
   useEffect(() => {
     if (currentUserId) {
       loadLikes();
+      loadReadingHistory();
     }
   }, [currentUserId, books]);
+
+  const loadReadingHistory = async () => {
+    if (!currentUserId) return;
+    
+    try {
+      const response = await fetch(`/api/reading-history?userId=${currentUserId}`);
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          setReadingHistory(result.data);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading reading history:', error);
+    }
+  };
 
   const loadBooksData = async () => {
     try {
@@ -269,6 +287,75 @@ function BooksPageContent() {
               </div>
             )}
           </div>
+
+          {/* Kaldığı Yerden Devam */}
+          {readingHistory.length > 0 && !searchQuery && (
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 flex items-center">
+                <i className="ri-book-open-line mr-2 text-orange-500"></i>
+                Kaldığı Yerden Devam Et
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {readingHistory.slice(0, 3).map((history) => (
+                  <div
+                    key={`${history.user_id}-${history.book_id}`}
+                    className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
+                  >
+                    <div className="p-6">
+                      <div className="flex items-start space-x-4">
+                        <div className="flex-shrink-0">
+                          <ImageWithFallback
+                            src={history.cover_image}
+                            alt={history.book_title}
+                            width={80}
+                            height={120}
+                            className="w-16 h-24 object-cover rounded-lg"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
+                            {history.book_title}
+                          </h3>
+                          {history.chapter_title && (
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                              {history.chapter_title}
+                            </p>
+                          )}
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center space-x-2">
+                              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                <div 
+                                  className="bg-orange-500 h-2 rounded-full transition-all duration-300"
+                                  style={{ width: `${history.progress_percentage}%` }}
+                                ></div>
+                              </div>
+                              <span className="text-xs text-gray-500 dark:text-gray-400">
+                                {Math.round(history.progress_percentage)}%
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex space-x-2">
+                            <Link
+                              href={history.chapter_id ? 
+                                `/kitaplar/${history.book_slug}/bolum/${history.chapter_slug}` : 
+                                `/kitaplar/${history.book_slug}`
+                              }
+                              className="flex-1 bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors text-center text-sm font-medium"
+                            >
+                              Devam Et
+                            </Link>
+                          </div>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                            Son okuma: {new Date(history.last_read_at).toLocaleDateString('tr-TR')}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Filters */}
           <BookFilters onFiltersChange={handleFiltersChange} />
