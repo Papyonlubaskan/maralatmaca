@@ -17,19 +17,15 @@ export default function Icon() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'white',
-          borderRadius: '4px',
+          background: 'linear-gradient(135deg, #f97316, #ea580c)',
+          borderRadius: '6px',
+          color: 'white',
+          fontSize: '18px',
+          fontWeight: 'bold',
+          fontFamily: 'system-ui, sans-serif',
         }}
       >
-        <img
-          src="https://maralatmaca.com/logo.jpg"
-          alt="Maral Atmaca"
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'contain',
-          }}
-        />
+        MA
       </div>
     ),
     {
