@@ -30,7 +30,7 @@ export async function GET(
     }
 
     const bookId = (await params).id;
-    console.log('📚 Book API çağrıldı, bookId:', bookId);
+    console.log('📚 Book API çağrıldı, bookId:', bookId, new Date().toISOString());
     
     // Input validation
     const sanitizedId = Validator.sanitizeInput(bookId);
