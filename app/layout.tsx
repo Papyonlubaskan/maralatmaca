@@ -86,11 +86,12 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
+      { url: '/maral-logo.jpg', sizes: 'any', type: 'image/jpeg' },
       { url: '/favicon.svg', sizes: 'any', type: 'image/svg+xml' },
       { url: '/favicon.ico', sizes: '32x32', type: 'image/x-icon' }
     ],
     shortcut: '/favicon.ico',
-    apple: '/favicon.svg',
+    apple: '/maral-logo.jpg',
   },
   other: {
     'revisit-after': '7 days',
