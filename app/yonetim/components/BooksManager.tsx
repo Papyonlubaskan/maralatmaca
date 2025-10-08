@@ -925,7 +925,7 @@ export default function BooksManager() {
                       e.preventDefault();
                       const text = e.clipboardData.getData('text');
                       
-                      // PDF'den kopyalanan metinleri düzelt
+                      // Temel temizlik
                       let cleanedText = text
                         .replace(/\r\n/g, '\n')  // Windows satır sonları
                         .replace(/\r/g, '\n')    // Mac satır sonları
@@ -938,12 +938,26 @@ export default function BooksManager() {
                         .replace(/\u201C/g, '"') // Left double quote
                         .replace(/\u201D/g, '"'); // Right double quote
                       
-                      // PDF'den gelen cümle ortası satır sonlarını düzelt
-                      // Tek satır sonlarını boşluğa çevir (cümle içi kesintileri düzelt)
-                      cleanedText = cleanedText.replace(/([a-zığüşöçĞÜŞİÖÇ])\n([a-zığüşöçĞÜŞİÖÇ])/g, '$1 $2');
+                      // Paragrafları ayır ve işle
+                      const paragraphs = cleanedText.split(/\n\s*\n/);
+                      const processedParagraphs = paragraphs.map(paragraph => {
+                        // Her paragrafı temizle
+                        let cleanParagraph = paragraph.trim();
+                        
+                        // Paragraf içindeki tek satır sonlarını boşluğa çevir
+                        // Ama cümle sonlarını (nokta, ünlem, soru işareti) koru
+                        cleanParagraph = cleanParagraph.replace(/([a-zığüşöçĞÜŞİÖÇ])\n([a-zığüşöçĞÜŞİÖÇ])/g, '$1 $2');
+                        
+                        // Birden fazla boşluğu tek boşluğa çevir
+                        cleanParagraph = cleanParagraph.replace(/\s+/g, ' ');
+                        
+                        return cleanParagraph;
+                      });
                       
-                      // Çift satır sonlarını koru (paragraf ayraçları)
-                      cleanedText = cleanedText.replace(/\n{3,}/g, '\n\n'); // 3+ satır sonunu 2'ye indir
+                      // Paragrafları birleştir (çift satır sonu ile)
+                      cleanedText = processedParagraphs
+                        .filter(p => p.length > 0) // Boş paragrafları kaldır
+                        .join('\n\n');
                       
                       // Başında ve sonundaki gereksiz boşlukları temizle
                       cleanedText = cleanedText.trim();
