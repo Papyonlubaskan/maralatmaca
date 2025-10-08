@@ -884,12 +884,15 @@ export default function BooksManager() {
                       e.preventDefault();
                       const text = e.clipboardData.getData('text');
                       
-                      // En basit algoritma: Sadece temel temizlik yap, yapıyı değiştirme
+                      // MİNİMAL TEMİZLİK: Sadece platform uyumluluğu için
                       let cleanedText = text
                         .replace(/\r\n/g, '\n')  // Windows satır sonları
                         .replace(/\r/g, '\n')    // Mac satır sonları
-                        .replace(/\u00A0/g, ' ') // Non-breaking space'leri normal boşluğa çevir
-                        .replace(/ {2,}/g, ' '); // Fazla boşlukları tek boşluğa indir
+                        .replace(/\u00A0/g, ' ') // Non-breaking space
+                        .replace(/\uFEFF/g, ''); // BOM karakteri
+                      
+                      // YAPISAL DEĞİŞİKLİK YOK!
+                      // Tüm boşluklar, paragraflar, girintiler olduğu gibi korunuyor
                       
                       // Cursor pozisyonuna yapıştır
                       const textarea = e.currentTarget;
