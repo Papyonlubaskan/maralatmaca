@@ -180,14 +180,9 @@ export async function PUT(
       );
     }
 
-    // Priority değiştirme (sadece admin)
-    if (priority && !isAdmin) {
-      return errorResponse('Unauthorized: Only admins can change comment priority', 403);
-    }
-
-    // Durum değiştirme (sadece admin)
-    if (status && !isAdmin) {
-      return errorResponse('Unauthorized: Only admins can change comment status', 403);
+    // Durum ve öncelik değiştirme (sadece admin)
+    if ((status || priority) && !isAdmin) {
+      return errorResponse('Unauthorized: Only admins can change comment status or priority', 403);
     }
 
     if (status || priority) {
@@ -213,11 +208,13 @@ export async function PUT(
         values.push(priority);
       }
       
-      updates.push('updated_at = NOW()');
-      values.push(commentId);
-      
-      const updateQuery = `UPDATE comments SET ${updates.join(', ')} WHERE id = ?`;
-      await executeQuery(updateQuery, values);
+      if (updates.length > 0) {
+        updates.push('updated_at = NOW()');
+        values.push(commentId);
+        
+        const updateQuery = `UPDATE comments SET ${updates.join(', ')} WHERE id = ?`;
+        await executeQuery(updateQuery, values);
+      }
     }
 
     return successResponse(

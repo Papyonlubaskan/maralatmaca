@@ -187,8 +187,16 @@ export default function CommentsManager() {
       });
       
       if (response.ok) {
+        // Seçili yorumu güncelle
+        if (selectedComment) {
+          setSelectedComment({
+            ...selectedComment,
+            status: status as any,
+            priority: priority as any || selectedComment.priority
+          });
+        }
         await loadComments();
-        setSelectedComment(null);
+        alert('Yorum güncellendi');
       } else {
         alert('Yorum durumu güncellenemedi!');
       }
