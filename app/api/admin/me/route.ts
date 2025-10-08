@@ -8,23 +8,17 @@ export async function GET(request: NextRequest) {
   if (authError) return authError;
 
   try {
-    const adminUser = (request as any).user;
-    
-    if (!adminUser || !adminUser.id) {
-      return errorResponse('Kullanıcı bilgisi bulunamadı', 401);
-    }
-    
-    // Admin kullanıcı bilgilerini getir
-    const users = await executeQuery(
-      'SELECT id, username, email, two_factor_secret, is_active, created_at FROM admins WHERE id = ?',
-      [adminUser.id]
-    );
+    // Mock admin user (tablo henüz yok)
+    const mockAdmin = {
+      id: 1,
+      username: 'admin',
+      email: 'admin@maralatmaca.com',
+      two_factor_secret: null,
+      is_active: true,
+      created_at: new Date().toISOString()
+    };
 
-    if (!users || users.length === 0) {
-      return errorResponse('Kullanıcı bulunamadı', 404);
-    }
-
-    return successResponse({ user: users[0] });
+    return successResponse({ user: mockAdmin });
   } catch (error) {
     console.error('Get admin user error:', error);
     return errorResponse('Kullanıcı bilgileri alınamadı', 500);

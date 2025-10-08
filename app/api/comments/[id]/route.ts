@@ -101,7 +101,16 @@ export async function PUT(
     }
 
     const commentId = (await params).id;
-    const { userId, content, status, is_hidden, priority, admin_reply } = await request.json();
+    
+    // JSON parse error handling
+    let requestData;
+    try {
+      requestData = await request.json();
+    } catch (error) {
+      return errorResponse('Invalid JSON in request body', 400);
+    }
+    
+    const { userId, content, status, is_hidden, priority, admin_reply } = requestData;
     
     // Admin kontrolü
     const adminCheck = await requireAdmin(request);
