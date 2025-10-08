@@ -30,10 +30,12 @@ export async function GET(
     }
 
     const bookId = (await params).id;
+    console.log('📚 Book API çağrıldı, bookId:', bookId);
     
     // Input validation
     const sanitizedId = Validator.sanitizeInput(bookId);
     if (!sanitizedId || sanitizedId.length < 1) {
+      console.log('❌ Invalid book ID:', sanitizedId);
       return errorResponse('Invalid book ID', 400);
     }
 
@@ -42,12 +44,20 @@ export async function GET(
     const query = isNumeric 
       ? 'SELECT * FROM books WHERE id = ? LIMIT 1'
       : 'SELECT * FROM books WHERE slug = ? LIMIT 1';
+    
+    console.log('📚 Query:', query, 'Param:', sanitizedId, 'isNumeric:', isNumeric);
+    
     const books = await executeQuery(query, [sanitizedId]);
+    console.log('📚 Query result:', books);
+    
     const book = books[0];
 
     if (!book) {
+      console.log('❌ Book not found for ID/slug:', sanitizedId);
       return errorResponse('Book not found', 404);
     }
+    
+    console.log('✅ Book found:', book.title);
 
     return NextResponse.json({
       success: true,
