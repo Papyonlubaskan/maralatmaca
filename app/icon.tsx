@@ -17,17 +17,19 @@ export default function Icon() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(135deg, #f97316, #ea580c)',
+          background: 'white',
           borderRadius: '6px',
-          color: 'white',
-          fontSize: '12px',
-          fontWeight: 'bold',
-          fontFamily: 'system-ui, sans-serif',
-          textAlign: 'center',
-          lineHeight: '1.2',
         }}
       >
-        Maral<br/>Atmaca
+        <img
+          src="https://maralatmaca.com/maral-logo.svg"
+          alt="Maral Atmaca"
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+          }}
+        />
       </div>
     ),
     {
