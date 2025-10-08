@@ -98,8 +98,6 @@ export default function DashboardHome({ onSectionChange }: DashboardHomeProps) {
 
   const loadDashboardData = async () => {
     try {
-      console.log('🔄 Dashboard verileri yükleniyor...');
-      
       await Promise.all([
         loadStats(),
         loadPopularContent(),
@@ -107,7 +105,6 @@ export default function DashboardHome({ onSectionChange }: DashboardHomeProps) {
       ]);
       
       setLastUpdate(new Date());
-      console.log('✅ Dashboard verileri güncellendi');
     } catch (error) {
       console.error('Dashboard veri yükleme hatası:', error);
     } finally {
