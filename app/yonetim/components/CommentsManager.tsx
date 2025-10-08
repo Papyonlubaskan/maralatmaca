@@ -385,14 +385,19 @@ export default function CommentsManager() {
       // Yeni sekmede aç ve yorum panelini otomatik aç
       const newWindow = window.open(url, '_blank');
       
-      // Yorum panelini açmak için localStorage'a bilgi gönder
+      // Yorum panelini açmak için postMessage gönder
       if (newWindow) {
         newWindow.addEventListener('load', () => {
-          newWindow.postMessage({
-            type: 'OPEN_COMMENT',
-            commentId: comment.id,
-            lineNumber: comment.line_number
-          }, '*');
+          // Origin kontrolü ile güvenli postMessage
+          try {
+            newWindow.postMessage({
+              type: 'OPEN_COMMENT',
+              commentId: comment.id,
+              lineNumber: comment.line_number
+            }, window.location.origin);
+          } catch (error) {
+            console.error('PostMessage error:', error);
+          }
         });
       }
     }

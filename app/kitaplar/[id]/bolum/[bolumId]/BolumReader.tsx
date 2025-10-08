@@ -178,7 +178,12 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
 
     // Admin panelinden gelen yorum açma mesajını dinle
     const handleMessage = (event: MessageEvent) => {
-      if (event.data.type === 'OPEN_COMMENT') {
+      // Sadece kendi origin'den gelen mesajları işle
+      if (event.origin !== window.location.origin) {
+        return;
+      }
+      
+      if (event.data && event.data.type === 'OPEN_COMMENT') {
         const { commentId, lineNumber } = event.data;
         
         // Yorum panelini aç
