@@ -925,15 +925,44 @@ export default function BooksManager() {
                       e.preventDefault();
                       const text = e.clipboardData.getData('text');
                       
-                      // SADECE MİNİMAL TEMİZLİK - YAPISAL DEĞİŞİKLİK YOK!
+                      // Temel temizlik
                       let cleanedText = text
                         .replace(/\r\n/g, '\n')  // Windows satır sonları
                         .replace(/\r/g, '\n')    // Mac satır sonları
                         .replace(/\u00A0/g, ' ') // Non-breaking space
-                        .replace(/\uFEFF/g, ''); // BOM karakteri
+                        .replace(/\uFEFF/g, '')  // BOM karakteri
+                        .replace(/\u2013/g, '-') // En dash
+                        .replace(/\u2014/g, '--') // Em dash
+                        .replace(/\u2018/g, "'") // Left single quote
+                        .replace(/\u2019/g, "'") // Right single quote
+                        .replace(/\u201C/g, '"') // Left double quote
+                        .replace(/\u201D/g, '"'); // Right double quote
                       
-                      // HİÇBİR DEĞİŞİKLİK YAPMA!
-                      // Tüm satır sonları, paragraflar, boşluklar olduğu gibi korunuyor
+                      // PDF'den gelen cümle ortası satır sonlarını düzelt
+                      // Paragrafları ayır (çift satır sonu ile)
+                      const paragraphs = cleanedText.split(/\n\s*\n/);
+                      
+                      const processedParagraphs = paragraphs.map(paragraph => {
+                        // Her paragrafı temizle
+                        let cleanParagraph = paragraph.trim();
+                        
+                        // Paragraf içindeki tek satır sonlarını boşluğa çevir
+                        // Ama cümle sonlarını (nokta, ünlem, soru işareti) koru
+                        cleanParagraph = cleanParagraph.replace(/([a-zığüşöçĞÜŞİÖÇ])\n([a-zığüşöçĞÜŞİÖÇ])/g, '$1 $2');
+                        
+                        // Birden fazla boşluğu tek boşluğa çevir
+                        cleanParagraph = cleanParagraph.replace(/\s+/g, ' ');
+                        
+                        return cleanParagraph;
+                      });
+                      
+                      // Paragrafları birleştir (çift satır sonu ile)
+                      cleanedText = processedParagraphs
+                        .filter(p => p.length > 0) // Boş paragrafları kaldır
+                        .join('\n\n');
+                      
+                      // Başında ve sonundaki gereksiz boşlukları temizle
+                      cleanedText = cleanedText.trim();
                       
                       // Cursor pozisyonuna yapıştır
                       const textarea = e.currentTarget;
