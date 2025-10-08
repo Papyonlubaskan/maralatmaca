@@ -45,7 +45,8 @@ function BooksPageContent() {
   useEffect(() => {
     if (currentUserId) {
       loadLikes();
-      loadReadingHistory();
+      // Geçici olarak reading history'yi devre dışı bırak
+      // loadReadingHistory();
     }
   }, [currentUserId, books]);
 
