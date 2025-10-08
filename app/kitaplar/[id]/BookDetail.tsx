@@ -91,9 +91,13 @@ export default function BookDetail({ bookId }: BookDetailProps) {
             const chaptersResult = await chaptersResponse.json();
             
             if (chaptersResult.success && chaptersResult.data) {
-              setChapters(chaptersResult.data);
+              // Bölümleri order_number ile sırala
+              const sortedChapters = chaptersResult.data.sort((a: any, b: any) => 
+                (a.order_number || 0) - (b.order_number || 0)
+              );
+              setChapters(sortedChapters);
               // Bölüm yorum sayılarını yükle
-              loadCommentCounts(chaptersResult.data);
+              loadCommentCounts(sortedChapters);
             }
           } catch (chaptersError) {
             console.error('Chapters loading error:', chaptersError);
@@ -120,7 +124,12 @@ export default function BookDetail({ bookId }: BookDetailProps) {
         
         if (foundBook) {
           setBook(foundBook);
-          setChapters(contentData?.chapters || []);
+          // Bölümleri order_number ile sırala
+          const chapters = contentData?.chapters || [];
+          const sortedChapters = chapters.sort((a: any, b: any) => 
+            (a.order_number || 0) - (b.order_number || 0)
+          );
+          setChapters(sortedChapters);
         } else {
           setError('Kitap bulunamadı');
         }
@@ -650,7 +659,7 @@ export default function BookDetail({ bookId }: BookDetailProps) {
                         >
                           <div className="flex items-center space-x-4">
                             <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full flex items-center justify-center text-sm font-semibold">
-                              {chapter.order_number || index + 11}
+                              {chapter.order_number || (index + 11)}
                             </div>
                             <div>
                               <h3 className="font-semibold text-gray-800 dark:text-white">

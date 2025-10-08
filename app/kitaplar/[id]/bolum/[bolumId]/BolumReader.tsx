@@ -234,7 +234,11 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
         
         const chapters = chaptersResult.data || [];
         console.log('Chapters loaded:', chapters.length);
-        setChapters(chapters);
+        // Bölümleri order_number ile sırala
+        const sortedChapters = chapters.sort((a: any, b: any) => 
+          (a.order_number || 0) - (b.order_number || 0)
+        );
+        setChapters(sortedChapters);
         
         // Bölüm detayını getir (slug veya ID ile)
         console.log('Bölüm yükleniyor, bolumId:', bolumId);
