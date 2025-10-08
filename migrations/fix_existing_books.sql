@@ -3,11 +3,11 @@
 -- 1. Mevcut kitapları listele
 SELECT id, title, slug FROM books ORDER BY id;
 
--- 2. SARKAÇ kitabını bul ve slug'ını düzelt
-UPDATE books SET slug = 'sarkac' WHERE title = 'SARKAÇ' OR title LIKE '%SARKAÇ%';
+-- 2. SARKAÇ kitabını bul ve slug'ını düzelt (safe mode uyumlu)
+UPDATE books SET slug = 'sarkac' WHERE id = (SELECT id FROM (SELECT id FROM books WHERE title = 'SARKAÇ' LIMIT 1) AS temp);
 
--- 3. Saka ve Sanrı kitabının slug'ını kontrol et
-UPDATE books SET slug = 'saka-ve-sanri' WHERE title = 'Saka ve Sanrı' OR title LIKE '%Saka%';
+-- 3. Saka ve Sanrı kitabının slug'ını kontrol et (safe mode uyumlu)
+UPDATE books SET slug = 'saka-ve-sanri' WHERE id = (SELECT id FROM (SELECT id FROM books WHERE title = 'Saka ve Sanrı' LIMIT 1) AS temp);
 
 -- 4. Diğer kitapların slug'larını da düzelt
 UPDATE books SET slug = LOWER(

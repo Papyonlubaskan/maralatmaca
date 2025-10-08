@@ -127,6 +127,7 @@ export default function BooksManager() {
     setEditingBook(bookWithChapters);
     setFormData({
       title: book.title || '',
+      slug: book.slug || '',
       description: book.description || '',
       content: book.content || '',
       cover_image_url: book.cover_image_url || book.cover_image || '',
