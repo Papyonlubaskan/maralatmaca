@@ -18,7 +18,7 @@ function BooksPageContent() {
   const [currentUserId, setCurrentUserId] = useState<string>('');
   const [pagination, setPagination] = useState({
     total: 0,
-    limit: 12,
+    limit: 6, // Daha az kitap yükle
     offset: 0,
     hasMore: false
   });

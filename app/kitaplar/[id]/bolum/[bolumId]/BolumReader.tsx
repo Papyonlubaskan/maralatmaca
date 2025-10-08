@@ -42,32 +42,43 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
   const [lineLikes, setLineLikes] = useState<{[key: number]: { total: number, isLiked: boolean }}>({});
   const [lineLikesLoaded, setLineLikesLoaded] = useState(false);
   const [readingProgress, setReadingProgress] = useState(0);
+  const [saveTimeout, setSaveTimeout] = useState<NodeJS.Timeout | null>(null);
 
-  // Okuma ilerlemesini kaydet
+  // Okuma ilerlemesini kaydet (debounced)
   const saveReadingProgress = async (lineNumber?: number) => {
     if (!currentUserId || !book || !chapter) return;
 
-    try {
-      const progressPercentage = lineNumber ? 
-        Math.min(100, Math.max(0, (lineNumber / chapter.content.split('\n').length) * 100)) : 
-        readingProgress;
-
-      await fetch('/api/reading-history', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: currentUserId,
-          bookId: book.id,
-          chapterId: chapter.id,
-          lineNumber: lineNumber || null,
-          progressPercentage: progressPercentage
-        })
-      });
-    } catch (error) {
-      console.error('Error saving reading progress:', error);
+    // Önceki timeout'u temizle
+    if (saveTimeout) {
+      clearTimeout(saveTimeout);
     }
+
+    // 2 saniye bekle, sonra kaydet
+    const timeout = setTimeout(async () => {
+      try {
+        const progressPercentage = lineNumber ? 
+          Math.min(100, Math.max(0, (lineNumber / chapter.content.split('\n').length) * 100)) : 
+          readingProgress;
+
+        await fetch('/api/reading-history', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: currentUserId,
+            bookId: book.id,
+            chapterId: chapter.id,
+            lineNumber: lineNumber || null,
+            progressPercentage: progressPercentage
+          })
+        });
+      } catch (error) {
+        console.error('Error saving reading progress:', error);
+      }
+    }, 2000);
+
+    setSaveTimeout(timeout);
   };
 
   // Scroll pozisyonuna göre okuma ilerlemesini hesapla
@@ -81,8 +92,8 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
     
     setReadingProgress(progress);
     
-    // Her %10'da bir kaydet
-    if (Math.floor(progress / 10) !== Math.floor(readingProgress / 10)) {
+    // Sadece %20'de bir kaydet (daha az sıklıkta)
+    if (Math.floor(progress / 20) !== Math.floor(readingProgress / 20)) {
       saveReadingProgress();
     }
   };

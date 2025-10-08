@@ -20,6 +20,10 @@ export async function GET(request: NextRequest) {
       });
     }
 
+    // Cache headers ekle
+    const response = new NextResponse();
+    response.headers.set('Cache-Control', 'public, max-age=60, s-maxage=300'); // 1 dk browser, 5 dk CDN
+
     const { searchParams } = new URL(request.url);
     let bookId = searchParams.get('bookId');
     let chapterId = searchParams.get('chapterId');

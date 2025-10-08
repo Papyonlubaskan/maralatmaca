@@ -32,6 +32,10 @@ export async function GET(request: NextRequest) {
       });
     }
 
+    // Cache headers ekle
+    const response = new NextResponse();
+    response.headers.set('Cache-Control', 'public, max-age=300, s-maxage=600'); // 5 dk browser, 10 dk CDN
+
     const search = searchParams.get('search');
 
     // MySQL'den kitapları çek - Basit query (MariaDB uyumlu)
