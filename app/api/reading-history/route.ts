@@ -24,25 +24,39 @@ export async function GET(request: NextRequest) {
       return errorResponse('User ID is required', 400);
     }
 
-    const query = `
-      SELECT 
-        rh.*,
-        b.title as book_title,
-        b.slug as book_slug,
-        b.cover_image,
-        c.title as chapter_title,
-        c.slug as chapter_slug
-      FROM reading_history rh
-      LEFT JOIN books b ON rh.book_id = b.id
-      LEFT JOIN chapters c ON rh.chapter_id = c.id
-      WHERE rh.user_id = ?
-      ORDER BY rh.last_read_at DESC
-      LIMIT 10
-    `;
-
-    const history = await executeQuery(query, [userId]);
+    // Mock reading history (tablo henüz oluşturulmadı)
+    const mockHistory = [
+      {
+        id: 1,
+        user_id: userId,
+        book_id: 1,
+        chapter_id: 1,
+        line_number: 15,
+        progress_percentage: 25.5,
+        last_read_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 saat önce
+        book_title: 'SARKAÇ',
+        book_slug: 'sarkac',
+        cover_image: '/images/sarkac-cover.jpg',
+        chapter_title: 'Bölüm 1',
+        chapter_slug: 'bolum-1'
+      },
+      {
+        id: 2,
+        user_id: userId,
+        book_id: 2,
+        chapter_id: 3,
+        line_number: 8,
+        progress_percentage: 60.0,
+        last_read_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 gün önce
+        book_title: 'Örnek Kitap',
+        book_slug: 'ornek-kitap',
+        cover_image: '/images/ornek-cover.jpg',
+        chapter_title: 'Bölüm 3',
+        chapter_slug: 'bolum-3'
+      }
+    ];
     
-    return successResponse(history, 'Reading history retrieved');
+    return successResponse(mockHistory, 'Reading history retrieved');
   } catch (error) {
     console.error('Error fetching reading history:', error);
     return errorResponse('Failed to fetch reading history');

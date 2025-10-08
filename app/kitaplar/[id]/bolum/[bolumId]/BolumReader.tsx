@@ -47,6 +47,40 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
   const [readingProgress, setReadingProgress] = useState(0);
   const [saveTimeout, setSaveTimeout] = useState<NodeJS.Timeout | null>(null);
 
+  // Okuma geçmişini yükle
+  const loadReadingHistory = async () => {
+    if (!currentUserId || !book || !chapter) return;
+    
+    try {
+      const response = await fetch(`/api/reading-history?userId=${currentUserId}`);
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success && result.data) {
+          // Bu bölüm için okuma geçmişini bul
+          const chapterHistory = result.data.find((h: any) => 
+            h.book_id === book.id && h.chapter_id === chapter.id
+          );
+          
+          if (chapterHistory) {
+            // Kaldığı yere scroll et
+            setTimeout(() => {
+              if (contentRef.current && chapterHistory.line_number) {
+                const lineHeight = 24; // Tahmini satır yüksekliği
+                const scrollTop = (chapterHistory.line_number - 1) * lineHeight;
+                contentRef.current.scrollTop = scrollTop;
+                
+                // Progress'i güncelle
+                setReadingProgress(chapterHistory.progress_percentage || 0);
+              }
+            }, 1000);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error loading reading history:', error);
+    }
+  };
+
   // Okuma ilerlemesini kaydet (debounced)
   const saveReadingProgress = async (lineNumber?: number) => {
     if (!currentUserId || !book || !chapter) return;
@@ -111,6 +145,7 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
     setCurrentUserId(userId);
     
     loadChapterData();
+    loadReadingHistory();
   }, [bookId, bolumId]);
 
   useEffect(() => {
