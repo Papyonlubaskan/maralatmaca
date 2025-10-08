@@ -146,11 +146,11 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
   };
 
   useEffect(() => {
-    // Kullanıcı ID'sini oluştur
-    let userId = localStorage.getItem('user_id');
+    // Kullanıcı ID'sini oluştur (sessionStorage kullan - kitaplar sayfası ile tutarlı)
+    let userId = sessionStorage.getItem('user_id');
     if (!userId) {
       userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem('user_id', userId);
+      sessionStorage.setItem('user_id', userId);
     }
     setCurrentUserId(userId);
     

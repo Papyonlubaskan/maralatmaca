@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
       return errorResponse('User ID is required', 400);
     }
 
-    // Önce reading_history tablosunun var olup olmadığını kontrol et
+    // Reading history tablosunu kontrol et
     try {
       const tableCheckQuery = `
         SELECT COUNT(*) as count 
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
         return successResponse([], 'Reading history table does not exist yet');
       }
       
-      // Tablo varsa gerçek veriyi getir
+      // Tablo varsa sadece bu kullanıcının verilerini getir
       const query = `
         SELECT 
           rh.*,
@@ -57,11 +57,14 @@ export async function GET(request: NextRequest) {
       `;
 
       const history = await executeQuery(query, [userId]);
+      
+      // Sadece bu kullanıcının verilerini döndür
       return successResponse(history, 'Reading history retrieved');
       
     } catch (error) {
-      // Tablo yoksa veya hata varsa boş array döndür
-      return successResponse([], 'Reading history not available yet');
+      // Hata durumunda boş array döndür
+      console.error('Reading history error:', error);
+      return successResponse([], 'Reading history not available');
     }
   } catch (error) {
     console.error('Error fetching reading history:', error);

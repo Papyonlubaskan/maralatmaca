@@ -288,7 +288,7 @@ function BooksPageContent() {
             )}
           </div>
 
-          {/* Kaldığı Yerden Devam */}
+          {/* Kaldığı Yerden Devam - Sadece bu kullanıcının okuma geçmişi varsa göster */}
           {readingHistory.length > 0 && !searchQuery && (
             <div className="mb-12">
               <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 flex items-center">
