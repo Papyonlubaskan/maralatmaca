@@ -5,6 +5,7 @@ import { successResponse, errorResponse, rateLimitResponse } from '@/lib/api-res
 
 // GET: Kullanıcının okuma geçmişini getir
 export async function GET(request: NextRequest) {
+  console.log('📚 Reading history API çağrıldı');
   try {
     const clientIP = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
     const rateLimit = apiRateLimiter.check(clientIP);

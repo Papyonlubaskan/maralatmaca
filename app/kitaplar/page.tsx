@@ -52,13 +52,19 @@ function BooksPageContent() {
   const loadReadingHistory = async () => {
     if (!currentUserId) return;
     
+    console.log('📚 Reading history yükleniyor, userId:', currentUserId);
     try {
       const response = await fetch(`/api/reading-history?userId=${currentUserId}`);
+      console.log('📚 Reading history response:', response.status, response.statusText);
+      
       if (response.ok) {
         const result = await response.json();
+        console.log('📚 Reading history data:', result);
         if (result.success) {
           setReadingHistory(result.data);
         }
+      } else {
+        console.error('📚 Reading history error:', response.status, response.statusText);
       }
     } catch (error) {
       console.error('Error loading reading history:', error);
