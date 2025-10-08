@@ -65,14 +65,24 @@ export default function BolumReader({ bookId, bolumId }: BolumReaderProps) {
             // Kaldığı yere scroll et
             setTimeout(() => {
               if (contentRef.current && chapterHistory.line_number) {
-                const lineHeight = 24; // Tahmini satır yüksekliği
+                // Daha doğru satır yüksekliği hesapla
+                const contentLines = chapter.content.split('\n');
+                const totalLines = contentLines.length;
+                const lineHeight = contentRef.current.scrollHeight / totalLines;
                 const scrollTop = (chapterHistory.line_number - 1) * lineHeight;
-                contentRef.current.scrollTop = scrollTop;
+                
+                // Smooth scroll ile kaldığı yere git
+                contentRef.current.scrollTo({
+                  top: scrollTop,
+                  behavior: 'smooth'
+                });
                 
                 // Progress'i güncelle
                 setReadingProgress(chapterHistory.progress_percentage || 0);
+                
+                console.log(`Kaldığı yere scroll ediliyor: Satır ${chapterHistory.line_number}, Progress: ${chapterHistory.progress_percentage}%`);
               }
-            }, 1000);
+            }, 1500); // Biraz daha uzun bekle
           }
         }
       }
