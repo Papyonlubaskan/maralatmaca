@@ -893,15 +893,15 @@ export default function BooksManager() {
               </div>
 
               {/* Content */}
-                <div>
+              <div>
                   <label className="block text-sm font-medium text-gray-800 dark:text-gray-100 mb-2">
                     Bölüm İçeriği *
                     <span className="text-xs text-gray-500 ml-2">(Tab: girinti ekle, Çift Enter: yeni paragraf)</span>
                   </label>
-                  <textarea
-                    required
-                    value={chapterFormData.content}
-                    onChange={e => setChapterFormData({ ...chapterFormData, content: e.target.value })}
+                <textarea
+                  required
+                  value={chapterFormData.content}
+                  onChange={e => setChapterFormData({ ...chapterFormData, content: e.target.value })}
                     onKeyDown={(e) => {
                       // Tab tuşu ile paragraf girinti ekle
                       if (e.key === 'Tab') {
@@ -925,7 +925,10 @@ export default function BooksManager() {
                       e.preventDefault();
                       const text = e.clipboardData.getData('text');
                       
-                      // SADECE MİNİMAL TEMİZLİK - HİÇBİR YAPISAL DEĞİŞİKLİK YOK!
+                      console.log('🔍 Paste event tetiklendi');
+                      console.log('📋 Orijinal metin:', text);
+                      
+                      // 1. Temel karakter temizliği
                       let cleanedText = text
                         .replace(/\r\n/g, '\n')  // Windows satır sonları
                         .replace(/\r/g, '\n')    // Mac satır sonları
@@ -938,11 +941,69 @@ export default function BooksManager() {
                         .replace(/\u201C/g, '"') // Left double quote
                         .replace(/\u201D/g, '"'); // Right double quote
                       
-                      // HİÇBİR CÜMLE KESME İŞLEMİ YOK!
-                      // HİÇBİR PARAGRAF BİRLEŞTİRME İŞLEMİ YOK!
-                      // TÜM SATIR SONLARI, PARAGRAFLAR, BOŞLUKLAR OLDUĞU GİBİ KORUNUYOR!
+                      console.log('🧹 Temizlenmiş metin:', cleanedText);
                       
-                      // Cursor pozisyonuna yapıştır
+                      // 2. Gelişmiş paragraf algılama ve düzenleme
+                      // PDF'den kopyalanan paragrafları daha iyi algıla
+                      
+                      // Önce mevcut çift satır sonlarını koru (PDF'den gelen paragraflar)
+                      console.log('🔍 Orijinal çift satır sonları:', (cleanedText.match(/\n\s*\n/g) || []).length);
+                      
+                      // Cümle sonları sonrası satır sonlarını işaretle
+                      cleanedText = cleanedText.replace(/([.!?])\s*\n/g, '$1\n\n');
+                      
+                      // Büyük harfle başlayan satırları daha agresif şekilde paragraf yap
+                      // Önceki satır cümle sonu ile bitiyorsa ve yeni satır büyük harfle başlıyorsa paragraf
+                      cleanedText = cleanedText.replace(/([.!?])\n([A-ZĞÜŞİÖÇ])/g, '$1\n\n$2');
+                      
+                      // Tırnak işareti ile başlayan satırları yeni paragraf olarak işaretle (diyalog)
+                      cleanedText = cleanedText.replace(/\n(\s*[""''])/g, '\n\n$1');
+                      
+                      // Çok kısa satırları (tek kelime) paragraf başı yapma - daha az agresif
+                      cleanedText = cleanedText.replace(/\n\n([A-ZĞÜŞİÖÇ][a-zığüşöçĞÜŞİÖÇ]{1,2})\n/g, '\n$1\n');
+                      
+                      console.log('🔍 İşlenmiş çift satır sonları:', (cleanedText.match(/\n\s*\n/g) || []).length);
+                      
+                      // 3. Paragrafları ayır (çift satır sonu ile)
+                      const paragraphs = cleanedText.split(/\n\s*\n/);
+                      console.log('📝 Paragraflar:', paragraphs.length);
+                      
+                      // 4. Her paragrafı işle
+                      const processedParagraphs = paragraphs.map((paragraph, index) => {
+                        let cleanParagraph = paragraph.trim();
+                        
+                        console.log(`📄 Paragraf ${index + 1}:`, cleanParagraph.substring(0, 50) + '...');
+                        
+                        // 5. Paragraf başında girinti kontrolü
+                        const indentMatch = cleanParagraph.match(/^(\s+)/);
+                        const hasIndent = indentMatch && indentMatch[1].length > 0;
+                        
+                        // 6. Cümle ortası satır sonlarını düzelt (PDF'den gelen)
+                        // Ama cümle sonlarını koru
+                        cleanParagraph = cleanParagraph.replace(/([a-zığüşöçĞÜŞİÖÇ])\n([a-zığüşöçĞÜŞİÖÇ])/g, '$1 $2');
+                        
+                        // 7. Birden fazla boşluğu tek boşluğa çevir
+                        cleanParagraph = cleanParagraph.replace(/\s+/g, ' ');
+                        
+                        // 8. Girinti varsa koru (4 boşluk)
+                        if (hasIndent) {
+                          cleanParagraph = '    ' + cleanParagraph.trim();
+                        }
+                        
+                        return cleanParagraph;
+                      });
+                      
+                      // 9. Paragrafları birleştir (çift satır sonu ile)
+                      cleanedText = processedParagraphs
+                        .filter(p => p.length > 0) // Boş paragrafları kaldır
+                        .join('\n\n');
+                      
+                      console.log('✅ İşlenmiş metin:', cleanedText.substring(0, 100) + '...');
+                      
+                      // 9. Başında ve sonundaki gereksiz boşlukları temizle
+                      cleanedText = cleanedText.trim();
+                      
+                      // 10. Cursor pozisyonuna yapıştır
                       const textarea = e.currentTarget;
                       const start = textarea.selectionStart;
                       const end = textarea.selectionEnd;
@@ -951,7 +1012,7 @@ export default function BooksManager() {
                       
                       setChapterFormData({ ...chapterFormData, content: newValue });
                       
-                      // Cursor ve scroll pozisyonunu ayarla
+                      // 11. Cursor ve scroll pozisyonunu ayarla
                       setTimeout(() => {
                         const newCursorPos = start + cleanedText.length;
                         textarea.selectionStart = textarea.selectionEnd = newCursorPos;
@@ -963,7 +1024,7 @@ export default function BooksManager() {
                     }}
                     rows={20}
                     className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-mono"
-                    placeholder="Bölüm içeriğini yazın veya yapıştırın...&#10;&#10;📋 PDF'den kopyala-yapıştır yapın&#10;✅ Orijinal format korunur&#10;✅ Paragraflar olduğu gibi kalır&#10;✅ Cümleler kesilmez"
+                    placeholder="Bölüm içeriğini yazın veya yapıştırın...&#10;&#10;🔧 DEBUG MODE: Paste fonksiyonu aktif&#10;📝 Gelişmiş paragraf algılama&#10;✅ PDF'den gelen paragraflar korunur&#10;✅ Console'da debug logları görün"
                     style={{
                       whiteSpace: 'pre-wrap',
                       overflowWrap: 'break-word',
@@ -971,9 +1032,9 @@ export default function BooksManager() {
                     }}
                   />
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                    💡 İpucu: PDF'den kopyala-yapıştır yapın. Metin olduğu gibi yapışır, hiçbir değişiklik yapılmaz.
+                    🔧 DEBUG: Paste fonksiyonu aktif. Gelişmiş paragraf algılama - PDF'den gelen paragraflar korunur. Console'da debug logları görün.
                   </p>
-                </div>
+              </div>
 
               {/* Action buttons */}
               <div className="flex space-x-4 pt-6">
