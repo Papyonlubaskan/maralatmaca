@@ -50,12 +50,16 @@ export async function GET(
     const books = await executeQuery(query, [sanitizedId]);
     console.log('📚 Query result:', books);
     
-    const book = books[0];
-
-    if (!book) {
+    // Eğer bulunamadıysa, tüm kitapları listele
+    if (!books || books.length === 0) {
       console.log('❌ Book not found for ID/slug:', sanitizedId);
+      console.log('📚 Available books:');
+      const allBooks = await executeQuery('SELECT id, title, slug FROM books ORDER BY id');
+      console.log('📚 All books:', allBooks);
       return errorResponse('Book not found', 404);
     }
+    
+    const book = books[0];
     
     console.log('✅ Book found:', book.title);
 

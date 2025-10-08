@@ -29,6 +29,9 @@ export async function GET(request: NextRequest) {
     let bookId = searchParams.get('bookId');
     let chapterId = searchParams.get('chapterId');
     const lineNumber = searchParams.get('lineNumber');
+    const userId = searchParams.get('userId');
+    
+    console.log('👍 Likes API çağrıldı:', { bookId, chapterId, lineNumber, userId });
     
     // Slug ise ID'ye çevir
     if (bookId && !/^\d+$/.test(bookId)) {
