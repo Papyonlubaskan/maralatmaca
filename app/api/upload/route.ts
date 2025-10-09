@@ -3,7 +3,7 @@ import { requireAdmin } from '@/lib/middleware/admin-auth';
 import { successResponse, errorResponse } from '@/lib/api-response';
 import { promises as fs } from 'fs';
 import path from 'path';
-import sharp from 'sharp';
+// import sharp from 'sharp'; // Geçici olarak devre dışı
 
 export async function POST(request: NextRequest) {
   try {
@@ -49,23 +49,12 @@ export async function POST(request: NextRequest) {
     let width = 0;
     let height = 0;
 
-    // Resim optimizasyonu (Sharp ile - basitleştirilmiş)
+    // Resim optimizasyonu (Sharp geçici olarak devre dışı)
     if (uploadType === 'image') {
-      try {
-        const image = sharp(buffer);
-        const metadata = await image.metadata();
-        width = metadata.width || 0;
-        height = metadata.height || 0;
-
-        // Basit optimizasyon - sadece kalite ayarı
-        optimizedBuffer = await image
-          .jpeg({ quality: 85 })
-          .toBuffer();
-      } catch (error) {
-        console.error('Image optimization error:', error);
-        // Optimizasyon başarısız olursa orijinal buffer'ı kullan
-        optimizedBuffer = buffer;
-      }
+      // Sharp optimizasyonu geçici olarak kapatıldı (tip uyumsuzluğu nedeniyle)
+      optimizedBuffer = buffer;
+      width = 0;
+      height = 0;
     }
 
     // Dosyayı kaydet
