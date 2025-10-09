@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     let width = 0;
     let height = 0;
 
-    // Resim optimizasyonu (Sharp ile)
+    // Resim optimizasyonu (Sharp ile - basitleştirilmiş)
     if (uploadType === 'image') {
       try {
         const image = sharp(buffer);
@@ -57,17 +57,14 @@ export async function POST(request: NextRequest) {
         width = metadata.width || 0;
         height = metadata.height || 0;
 
-        // Resmi optimize et
+        // Basit optimizasyon - sadece kalite ayarı
         optimizedBuffer = await image
-          .resize(800, 1200, { 
-            fit: 'inside',
-            withoutEnlargement: true 
-          })
           .jpeg({ quality: 85 })
           .toBuffer();
       } catch (error) {
         console.error('Image optimization error:', error);
         // Optimizasyon başarısız olursa orijinal buffer'ı kullan
+        optimizedBuffer = buffer;
       }
     }
 
