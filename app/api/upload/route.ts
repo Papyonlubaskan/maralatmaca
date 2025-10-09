@@ -1,14 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/middleware/admin-auth';
 import { successResponse, errorResponse } from '@/lib/api-response';
-import { v2 as cloudinary } from 'cloudinary';
-
-// Cloudinary konfigürasyonu
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || 'dvgsmuhjt',
-  api_key: process.env.CLOUDINARY_API_KEY || '911194959441699',
-  api_secret: process.env.CLOUDINARY_API_SECRET || 'vCFmQl3ffuacqiOnE38E3la6dg8'
-});
+import { promises as fs } from 'fs';
+import path from 'path';
+import sharp from 'sharp';
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,33 +34,57 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Cloudinary'ye yükle
-    const uploadResult = await new Promise<any>((resolve, reject) => {
-      cloudinary.uploader.upload_stream(
-        {
-          folder: uploadType === 'image' ? 'maralatmaca/books' : 'maralatmaca/documents',
-          resource_type: 'image',
-          transformation: uploadType === 'image' ? [
-            { width: 800, height: 1200, crop: 'limit' },
-            { quality: 'auto:good' },
-            { fetch_format: 'auto' }
-          ] : undefined
-        },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      ).end(buffer);
-    });
+    // Upload dizinini oluştur
+    const uploadDir = path.join(process.cwd(), 'public', 'uploads', uploadType === 'image' ? 'images' : 'documents');
+    await fs.mkdir(uploadDir, { recursive: true });
+
+    // Benzersiz dosya adı oluştur
+    const timestamp = Date.now();
+    const randomString = Math.random().toString(36).substring(2, 15);
+    const extension = path.extname(file.name);
+    const filename = `${timestamp}_${randomString}${extension}`;
+    const filepath = path.join(uploadDir, filename);
+
+    let optimizedBuffer = buffer;
+    let width = 0;
+    let height = 0;
+
+    // Resim optimizasyonu (Sharp ile)
+    if (uploadType === 'image') {
+      try {
+        const image = sharp(buffer);
+        const metadata = await image.metadata();
+        width = metadata.width || 0;
+        height = metadata.height || 0;
+
+        // Resmi optimize et
+        optimizedBuffer = await image
+          .resize(800, 1200, { 
+            fit: 'inside',
+            withoutEnlargement: true 
+          })
+          .jpeg({ quality: 85 })
+          .toBuffer();
+      } catch (error) {
+        console.error('Image optimization error:', error);
+        // Optimizasyon başarısız olursa orijinal buffer'ı kullan
+      }
+    }
+
+    // Dosyayı kaydet
+    await fs.writeFile(filepath, optimizedBuffer);
+
+    // URL oluştur
+    const url = `/uploads/${uploadType === 'image' ? 'images' : 'documents'}/${filename}`;
 
     return successResponse({
-      filename: uploadResult.public_id,
+      filename: filename,
       originalName: file.name,
-      url: uploadResult.secure_url,
-      size: uploadResult.bytes,
+      url: url,
+      size: optimizedBuffer.length,
       type: file.type,
-      width: uploadResult.width,
-      height: uploadResult.height
+      width: width,
+      height: height
     }, 'Dosya başarıyla yüklendi');
 
   } catch (error) {
@@ -82,21 +101,23 @@ export async function DELETE(request: NextRequest) {
       return authError;
     }
 
-    const { filename, publicId } = await request.json();
+    const { filename, uploadType } = await request.json();
 
-    if (!filename && !publicId) {
-      return errorResponse('Dosya adı veya public ID gerekli', 400);
+    if (!filename) {
+      return errorResponse('Dosya adı gerekli', 400);
     }
 
-    // Cloudinary'den sil
-    const idToDelete = publicId || filename;
-    const result = await cloudinary.uploader.destroy(idToDelete);
+    // Dosya yolunu oluştur
+    const fileDir = uploadType === 'image' ? 'images' : 'documents';
+    const filepath = path.join(process.cwd(), 'public', 'uploads', fileDir, filename);
 
-    if (result.result !== 'ok') {
+    try {
+      // Dosyayı sil
+      await fs.unlink(filepath);
+      return successResponse({ message: 'Dosya başarıyla silindi' }, 'Dosya silindi');
+    } catch (fileError) {
       return errorResponse('Dosya bulunamadı veya silinemedi', 404);
     }
-
-    return successResponse({ message: 'Dosya başarıyla silindi' }, 'Dosya silindi');
 
   } catch (error) {
     console.error('File deletion error:', error);
