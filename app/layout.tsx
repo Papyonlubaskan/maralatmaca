@@ -41,14 +41,14 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://maralatmaca.com'),
+  metadataBase: new URL('https://maralatmaca-production.up.railway.app'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
     type: 'profile',
     locale: 'tr_TR',
-    url: 'https://maralatmaca.com',
+    url: 'https://maralatmaca-production.up.railway.app',
     title: 'Maral Atmaca - Türk Edebiyatı Yazarı | Romanlar ve Hikayeler',
     description: 'Yazar Maral Atmaca\'nın resmi web sitesi. Yarala Sar, Saka ve Sanrı gibi çağdaş Türk edebiyatının eserlerini ücretsiz online okuyun.',
     siteName: 'Maral Atmaca - Yazar',

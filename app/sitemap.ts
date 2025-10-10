@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { executeQuery } from '@/lib/database/mysql';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://maralatmaca.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://maralatmaca-production.up.railway.app';
   
   // Static pages - SEO optimized
   const staticPages = [

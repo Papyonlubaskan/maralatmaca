@@ -3,6 +3,7 @@ import Hero from '../components/Hero';
 import FeaturedBooks from '../components/FeaturedBooks';
 import NewsletterSection from '../components/NewsletterSection';
 import Footer from '../components/Footer';
+import SEOStructuredData from '../components/SEOStructuredData';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
   creator: 'Maral Atmaca',
   publisher: 'Maral Atmaca',
   alternates: {
-    canonical: process.env.NEXT_PUBLIC_SITE_URL || 'https://maralatmaca.com',
+    canonical: process.env.NEXT_PUBLIC_SITE_URL || 'https://maralatmaca-production.up.railway.app',
   },
   openGraph: {
     title: 'Maral Atmaca - Türk Edebiyatı Yazarı | Kitaplar ve Romanlar',
@@ -58,6 +59,8 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <div className="min-h-screen">
+      <SEOStructuredData type="person" />
+      <SEOStructuredData type="website" />
       <Hero />
       <FeaturedBooks />
       <NewsletterSection />
