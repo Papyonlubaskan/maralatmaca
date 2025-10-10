@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
 
+export async function GET() {
+  return NextResponse.json({
+    message: 'Test upload API - POST method kullanın',
+    method: 'POST',
+    endpoint: '/api/test-upload-simple',
+    example: 'FormData ile file gönderin'
+  });
+}
+
 export async function POST(request: NextRequest) {
   try {
     console.log('Upload test başladı...');
