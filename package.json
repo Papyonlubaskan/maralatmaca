@@ -9,8 +9,7 @@
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "backup": "node scripts/backup-cron.js",
-    "clean": "rm -rf .next && rm -rf node_modules/.cache",
-    "prebuild": "npm run clean || true"
+    "clean": "rm -rf .next || true && rm -rf node_modules/.cache || true"
   },
   "dependencies": {
     "@react-google-maps/api": "^2.19.3",

@@ -8,6 +8,15 @@ interface EmailConfig {
     user: string;
     pass: string;
   };
+  // Timeout ayarları
+  connectionTimeout?: number;
+  greetingTimeout?: number;
+  socketTimeout?: number;
+  // Pool ayarları
+  pool?: boolean;
+  maxConnections?: number;
+  maxMessages?: number;
+  rateLimit?: number;
 }
 
 interface EmailData {
