@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 interface ImageUploaderProps {
   label: string;
@@ -26,6 +26,11 @@ export default function ImageUploader({
   const [error, setError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Value prop değiştiğinde preview'i güncelle
+  useEffect(() => {
+    setPreview(value);
+  }, [value]);
+
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -47,30 +52,30 @@ export default function ImageUploader({
     setUploading(true);
 
     try {
+      console.log('Upload başlıyor...', file.name);
+      
       // Create FormData
       const formData = new FormData();
       formData.append('file', file);
       formData.append('type', 'image');
 
-      // Get admin token (optional in development)
-      const token = sessionStorage.getItem('admin_token');
-      
-      // Upload file
-      const headers: HeadersInit = {};
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
+      console.log('FormData oluşturuldu');
 
+      // Upload file (auth olmadan test için)
       const response = await fetch('/api/upload', {
         method: 'POST',
-        headers,
         body: formData
       });
 
+      console.log('Upload response:', response.status);
+
       const result = await response.json();
+      console.log('Upload result:', result);
 
       if (result.success && result.data) {
         const uploadedUrl = result.data.url;
+        console.log('Upload başarılı:', uploadedUrl);
+        
         setPreview(uploadedUrl);
         onChange(uploadedUrl);
         
@@ -78,6 +83,7 @@ export default function ImageUploader({
           onUploadComplete(uploadedUrl);
         }
       } else {
+        console.error('Upload başarısız:', result);
         throw new Error(result.error || 'Yükleme başarısız');
       }
     } catch (error: any) {
