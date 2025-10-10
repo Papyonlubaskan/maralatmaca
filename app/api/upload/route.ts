@@ -50,10 +50,11 @@ export async function POST(request: NextRequest) {
 
     // Resim optimizasyonu (Sharp olmadan)
     if (uploadType === 'image') {
-      // Sharp olmadan basit optimizasyon - sadece dosya boyutu kontrolü
       optimizedBuffer = buffer;
-      width = 0;
-      height = 0;
+      
+      // Next.js Image component için varsayılan boyutlar
+      width = 800;
+      height = 1200;
       
       // Dosya boyutu çok büyükse uyarı ver
       if (buffer.length > 2 * 1024 * 1024) { // 2MB
