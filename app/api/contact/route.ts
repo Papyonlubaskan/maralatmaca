@@ -96,9 +96,14 @@ export async function POST(request: NextRequest) {
 
     // Send email (optional - may fail if not configured)
     try {
-      await emailService.sendContactEmail(sanitizedData);
+      const emailSent = await emailService.sendContactEmail(sanitizedData);
+      if (emailSent) {
+        console.log('✅ Email başarıyla gönderildi');
+      } else {
+        console.log('⚠️ Email gönderilemedi, mesaj veritabanına kaydedildi');
+      }
     } catch (emailError) {
-      console.log('Email service not configured, message saved to database:', emailError);
+      console.log('⚠️ Email service hatası, mesaj veritabanına kaydedildi:', emailError);
     }
 
     // Always return success if database save succeeded

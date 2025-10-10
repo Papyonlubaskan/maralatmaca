@@ -28,7 +28,16 @@ class EmailService {
       auth: {
         user: process.env.EMAIL_USER || '',
         pass: process.env.EMAIL_PASS || ''
-      }
+      },
+      // Timeout ayarları
+      connectionTimeout: 10000, // 10 saniye
+      greetingTimeout: 5000,    // 5 saniye
+      socketTimeout: 10000,     // 10 saniye
+      // Pool ayarları
+      pool: true,
+      maxConnections: 5,
+      maxMessages: 100,
+      rateLimit: 10
     };
 
     this.transporter = nodemailer.createTransport(config);
@@ -51,9 +60,9 @@ class EmailService {
       });
       return true;
     } catch (error: any) {
-      // EAUTH hatası varsa sessizce geç (development mode)
-      if (error.code === 'EAUTH' || error.code === 'ESOCKET') {
-        console.log('⚠️ Email servisi kullanılamıyor - mesaj veritabanına kaydedildi');
+      // Email hatalarını yakala ve sessizce geç
+      if (error.code === 'EAUTH' || error.code === 'ESOCKET' || error.code === 'ETIMEDOUT' || error.code === 'ECONNREFUSED') {
+        console.log('⚠️ Email servisi kullanılamıyor - mesaj veritabanına kaydedildi:', error.code);
         return true;
       }
       console.error('Email gönderme hatası:', error);

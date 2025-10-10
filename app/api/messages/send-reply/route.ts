@@ -23,6 +23,10 @@ export async function POST(request: NextRequest) {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
       },
+      // Timeout ayarları
+      connectionTimeout: 15000, // 15 saniye
+      greetingTimeout: 8000,    // 8 saniye
+      socketTimeout: 15000,     // 15 saniye
       tls: {
         rejectUnauthorized: false, // Self-signed sertifika sorununu çözer
         minVersion: 'TLSv1.2'
