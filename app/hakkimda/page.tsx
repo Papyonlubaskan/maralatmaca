@@ -21,10 +21,9 @@ export default function AboutPage() {
   const loadStats = async () => {
     try {
       // Gerçek verileri API'den çek
-      const [booksRes, commentsRes, likesRes] = await Promise.all([
+      const [booksRes, commentsRes] = await Promise.all([
         fetch('/api/books'),
-        fetch('/api/comments?limit=1'),
-        fetch('/api/likes')
+        fetch('/api/comments?limit=1')
       ]);
 
       let totalBooks = 5; // Varsayılan
@@ -45,13 +44,7 @@ export default function AboutPage() {
         }
       }
 
-      if (likesRes.ok) {
-        const likesData = await likesRes.json();
-        if (likesData.success && likesData.total) {
-          // Her beğeni ortalama 10 okur anlamına gelir
-          totalReaders = Math.max(likesData.total * 10, 350000);
-        }
-      }
+      // Likes API'si parametre gerektiriyor, şimdilik varsayılan değer kullan
 
       // Yıllık deneyim hesapla (2017'den bu yana)
       const startYear = 2017;
