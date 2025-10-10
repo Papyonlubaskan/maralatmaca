@@ -1,10 +1,23 @@
 import Script from 'next/script';
+import { useState, useEffect } from 'react';
 
 export default function GoogleAnalytics() {
   const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
   if (!GA_ID) {
     return null; // Don't render if GA_ID is not set
+  }
+
+  // Check cookie consent
+  const [hasConsent, setHasConsent] = useState(false);
+
+  useEffect(() => {
+    const consent = localStorage.getItem('cookie-consent');
+    setHasConsent(consent === 'accepted');
+  }, []);
+
+  if (!hasConsent) {
+    return null; // Don't load GA without consent
   }
 
   return (
@@ -20,6 +33,10 @@ export default function GoogleAnalytics() {
           gtag('js', new Date());
           gtag('config', '${GA_ID}', {
             page_path: window.location.pathname,
+            cookie_flags: 'SameSite=None;Secure',
+            anonymize_ip: true,
+            allow_google_signals: false,
+            allow_ad_personalization_signals: false,
           });
         `}
       </Script>

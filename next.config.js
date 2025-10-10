@@ -76,6 +76,15 @@ const nextConfig = {
         ],
       },
       {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Set-Cookie',
+            value: 'SameSite=None; Secure; HttpOnly',
+          },
+        ],
+      },
+      {
         source: '/sitemap.xml',
         headers: [
           {

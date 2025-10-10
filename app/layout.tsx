@@ -5,6 +5,7 @@ import "./globals.css";
 import Header from '../components/Header';
 import MaintenanceChecker from '../components/MaintenanceChecker';
 import GoogleAnalytics from '../components/GoogleAnalytics';
+import CookieConsent from '../components/CookieConsent';
 import { ToastProvider } from '../components/Toast';
 import { WebsiteStructuredData } from '../components/StructuredData';
 
@@ -143,6 +144,7 @@ export default function RootLayout({
           <MaintenanceChecker>
             <Header />
             {children}
+            <CookieConsent />
           </MaintenanceChecker>
         </ToastProvider>
       </body>
