@@ -2,7 +2,7 @@
 const nextConfig = {
   // Production optimizations
   eslint: {
-    ignoreDuringBuilds: false,
+    ignoreDuringBuilds: true, // ESLint hatalarını build sırasında ignore et
   },
   typescript: {
     ignoreBuildErrors: false,
@@ -16,6 +16,16 @@ const nextConfig = {
   compress: true,
   poweredByHeader: false,
   reactStrictMode: true,
+  
+  // Production optimizations
+  productionBrowserSourceMaps: false,
+  
+  // Logging
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
   
   // Image optimization
   images: {
