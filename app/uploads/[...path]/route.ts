@@ -53,7 +53,10 @@ export async function GET(
         break;
     }
 
-    return new NextResponse(fileBuffer.buffer, {
+    // Buffer'ı Uint8Array'e çevir
+    const uint8Array = new Uint8Array(fileBuffer);
+
+    return new NextResponse(uint8Array, {
       headers: {
         'Content-Type': contentType,
         'Cache-Control': 'public, max-age=31536000, immutable',
