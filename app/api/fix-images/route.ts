@@ -11,21 +11,47 @@ export async function GET() {
       database: process.env.DB_NAME,
     });
 
-    // Önce books tablosunun yapısını kontrol et
-    const [columns] = await connection.query('DESCRIBE books') as any[];
-    
-    // Tüm kitapları al (resim kolonunu bul)
+    // Tüm kitapları al
     const [books] = await connection.query(
-      'SELECT * FROM books LIMIT 5'
+      'SELECT id, title, cover_image FROM books WHERE cover_image IS NOT NULL AND cover_image != ""'
     ) as any[];
+
+    let fixedCount = 0;
+    const results = [];
+
+    for (const book of books) {
+      if (book.cover_image && book.cover_image.includes('/uploads/images/')) {
+        // Resim URL'sini düzelt - localhost kısmını kaldır
+        let newUrl = book.cover_image;
+        
+        // localhost:3000 kısmını kaldır
+        if (newUrl.includes('http://localhost:3000')) {
+          newUrl = newUrl.replace('http://localhost:3000', '');
+        }
+        
+        // Database'i güncelle
+        await connection.query(
+          'UPDATE books SET cover_image = ? WHERE id = ?',
+          [newUrl, book.id]
+        );
+        
+        fixedCount++;
+        results.push({
+          id: book.id,
+          title: book.title,
+          oldUrl: book.cover_image,
+          newUrl: newUrl
+        });
+      }
+    }
 
     await connection.end();
 
     return NextResponse.json({
       success: true,
-      message: 'Database yapısı kontrol edildi',
-      columns: columns,
-      sampleBooks: books
+      message: `${fixedCount} kitap resmi düzeltildi`,
+      fixedCount,
+      results
     });
 
   } catch (error: any) {
