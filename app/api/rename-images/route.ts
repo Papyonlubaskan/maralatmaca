@@ -26,53 +26,29 @@ export async function GET() {
     const results = [];
     let renamedCount = 0;
 
-    // Her kitap için uygun dosyayı bul ve yeniden adlandır
-    for (const book of books) {
-      const currentFilename = path.basename(book.cover_image);
+    // Database'i mevcut dosyalarla eşleştir
+    for (let i = 0; i < books.length && i < files.length; i++) {
+      const book = books[i];
+      const availableFile = files[i];
       
-      // Dosya var mı kontrol et
-      const currentPath = path.join(imagesDir, currentFilename);
-      try {
-        await fs.access(currentPath);
-        results.push({
-          id: book.id,
-          title: book.title,
-          filename: currentFilename,
-          status: 'exists'
-        });
-      } catch (error) {
-        // Dosya yok, mevcut dosyalardan birini kullan
-        if (files.length > 0) {
-          const newFilename = files.shift(); // İlk dosyayı al
-          const oldPath = path.join(imagesDir, newFilename);
-          const newPath = path.join(imagesDir, currentFilename);
-          
-          try {
-            await fs.copyFile(oldPath, newPath);
-            
-            // Database'i güncelle
-            await connection.query(
-              'UPDATE books SET cover_image = ? WHERE id = ?',
-              [book.cover_image, book.id]
-            );
-            
-            renamedCount++;
-            results.push({
-              id: book.id,
-              title: book.title,
-              oldFilename: newFilename,
-              newFilename: currentFilename,
-              status: 'renamed'
-            });
-          } catch (copyError) {
-            results.push({
-              id: book.id,
-              title: book.title,
-              error: 'Copy failed'
-            });
-          }
-        }
-      }
+      // Yeni URL oluştur
+      const newUrl = `/uploads/images/${availableFile}`;
+      
+      // Database'i güncelle
+      await connection.query(
+        'UPDATE books SET cover_image = ? WHERE id = ?',
+        [newUrl, book.id]
+      );
+      
+      renamedCount++;
+      results.push({
+        id: book.id,
+        title: book.title,
+        oldUrl: book.cover_image,
+        newUrl: newUrl,
+        newFilename: availableFile,
+        status: 'updated'
+      });
     }
 
     await connection.end();
