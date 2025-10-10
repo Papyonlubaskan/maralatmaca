@@ -120,11 +120,12 @@ export default function ImageUploader({
       <div className="space-y-3">
         {/* Preview */}
         {preview && (
-          <div className="relative w-full h-48 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
+          <div className="relative w-full bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
             <img
               src={preview}
               alt="Preview"
-              className="w-full h-full object-contain"
+              className="w-full h-auto max-h-96 object-cover rounded-lg"
+              style={{ minHeight: '200px' }}
             />
             <button
               type="button"

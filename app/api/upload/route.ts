@@ -62,19 +62,21 @@ export async function POST(request: NextRequest) {
     let width = 0;
     let height = 0;
 
-    // Resim optimizasyonu (Sharp olmadan)
-    if (uploadType === 'image') {
-      optimizedBuffer = buffer;
-      
-      // Next.js Image component için varsayılan boyutlar
-      width = 800;
-      height = 1200;
-      
-      // Dosya boyutu çok büyükse uyarı ver
-      if (buffer.length > 2 * 1024 * 1024) { // 2MB
-        console.warn('Large image uploaded:', file.name, 'Size:', buffer.length);
-      }
-    }
+        // Resim optimizasyonu (Sharp olmadan)
+        if (uploadType === 'image') {
+          optimizedBuffer = buffer;
+          
+          // Gerçek resim boyutlarını al (basit yöntem)
+          // Büyük resimler için varsayılan boyutlar
+          if (buffer.length > 2 * 1024 * 1024) { // 2MB
+            console.warn('Large image uploaded:', file.name, 'Size:', buffer.length);
+            width = 1200;
+            height = 1600;
+          } else {
+            width = 800;
+            height = 1200;
+          }
+        }
 
     // Dosyayı kaydet
     await fs.writeFile(filepath, optimizedBuffer);

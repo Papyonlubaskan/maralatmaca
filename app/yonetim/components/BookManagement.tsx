@@ -450,7 +450,8 @@ export default function BookManagement() {
                       <img
                         src={(book as any).cover_image_url || book.cover_image}
                         alt={book.title}
-                        className="w-16 h-20 object-cover rounded-lg"
+                        className="w-20 h-28 object-cover rounded-lg shadow-sm"
+                        style={{ minWidth: '80px', minHeight: '112px' }}
                       />
                     )}
                     <div>
