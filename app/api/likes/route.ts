@@ -52,6 +52,9 @@ export async function GET(request: NextRequest) {
       return errorResponse('BookId or chapterId required', 400);
     }
 
+    // userId opsiyonel - yoksa IP kullan
+    const effectiveUserId = userId || clientIP;
+
     // MySQL'den beğeni sayısını çek
     let likeCountQuery = 'SELECT COUNT(*) as totalLikes FROM likes WHERE ';
     let params: any[] = [];
@@ -73,7 +76,7 @@ export async function GET(request: NextRequest) {
     const totalLikes = likeCountResult[0]?.totalLikes || 0;
 
     // Kullanıcının beğenip beğenmediğini IP ile kontrol et
-    const userIp = clientIP;
+    const userIp = effectiveUserId;
     let isLiked = false;
     let userLikeQuery = 'SELECT COUNT(*) as isLiked FROM likes WHERE user_ip = ? AND ';
     

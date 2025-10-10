@@ -209,7 +209,7 @@ export default function BookDetail({ bookId }: BookDetailProps) {
     try {
       if (!book?.id || !currentUserId) return;
       
-      const response = await fetch(`/api/likes?bookId=${book.id}`);
+      const response = await fetch(`/api/likes?bookId=${book.id}&userId=${currentUserId}`);
       const result = await response.json();
       
       if (result.success && result.data) {
@@ -234,7 +234,7 @@ export default function BookDetail({ bookId }: BookDetailProps) {
       
       for (const chapter of chapters) {
         try {
-          const response = await fetch(`/api/likes?chapterId=${chapter.id}`);
+          const response = await fetch(`/api/likes?chapterId=${chapter.id}&userId=${currentUserId}`);
           const result = await response.json();
           
           console.log(`❤️ Chapter ${chapter.id} likes:`, result);
