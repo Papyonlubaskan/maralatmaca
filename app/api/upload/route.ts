@@ -6,15 +6,29 @@ import path from 'path';
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('Upload API çağrıldı...');
+    
     // Admin authentication check
     const authError = await requireAdmin(request);
-    if (authError) return authError;
+    if (authError) {
+      console.log('Auth error:', authError);
+      return authError;
+    }
+    
+    console.log('Auth başarılı');
 
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const uploadType = formData.get('type') as string || 'image';
 
+    console.log('Form data alındı:', { 
+      fileName: file ? file.name : 'No file',
+      uploadType: uploadType,
+      fileSize: file ? file.size : 0
+    });
+
     if (!file) {
+      console.log('Dosya seçilmedi');
       return errorResponse('Dosya seçilmedi', 400);
     }
 
