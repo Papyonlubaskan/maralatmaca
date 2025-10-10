@@ -53,7 +53,7 @@ export async function GET(
         break;
     }
 
-    return new NextResponse(fileBuffer, {
+    return new NextResponse(fileBuffer.buffer, {
       headers: {
         'Content-Type': contentType,
         'Cache-Control': 'public, max-age=31536000, immutable',
