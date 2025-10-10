@@ -7,9 +7,13 @@ export async function GET(
   { params }: { params: Promise<{ path: string[] }> }
 ) {
   try {
+    console.log('Upload route çağrıldı');
     const resolvedParams = await params;
     const filePath = resolvedParams.path.join('/');
     const fullPath = path.join(process.cwd(), 'public', 'uploads', filePath);
+    
+    console.log('File path:', filePath);
+    console.log('Full path:', fullPath);
     
     // Güvenlik kontrolü - sadece uploads klasörü içindeki dosyalara erişim
     const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
