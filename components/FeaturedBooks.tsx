@@ -277,7 +277,7 @@ export default function FeaturedBooks() {
                   alt={book.title}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                  className="object-contain group-hover:scale-105 transition-transform duration-300"
                   priority={true}
                   quality={85}
                   fallbackTitle={book.title}

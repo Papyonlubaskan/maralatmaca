@@ -429,11 +429,11 @@ export default function BookDetail({ bookId }: BookDetailProps) {
             <div className="md:flex">
               {/* Kitap Kapağı */}
               <div className="md:w-1/3">
-                <div className="aspect-[3/4] md:aspect-square">
+                <div className="aspect-[3/4] md:aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
                   <img
                     src={book.cover_image_url || book.cover_image || '/images/book-placeholder.jpg'}
                     alt={book.title}
-                    className="w-full h-full object-cover object-top"
+                    className="w-full h-full object-contain"
                     onError={(e) => {
                       e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iI2Y3ZjhmYSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM5Y2EzYWYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5LaXRhcCBLYXBhxJ8xPC90ZXh0Pjwvc3ZnPg==';
                     }}
