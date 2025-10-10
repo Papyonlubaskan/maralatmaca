@@ -67,7 +67,10 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
         crawlDelay: 1,
       },
     ],
-    sitemap: `${baseUrl}/sitemap.xml`,
+    sitemap: [
+      `${baseUrl}/sitemap.xml`,
+      `${baseUrl}/public/sitemap.xml`
+    ],
     host: baseUrl,
   };
 }
