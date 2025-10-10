@@ -61,9 +61,15 @@ export default function ImageUploader({
 
       console.log('FormData oluşturuldu');
 
-      // Upload file (auth olmadan test için)
+      // Admin token'ı al
+      const token = sessionStorage.getItem('admin_token');
+      
+      // Upload file with auth
       const response = await fetch('/api/upload', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: formData
       });
 
