@@ -8,14 +8,11 @@ export async function POST(request: NextRequest) {
   try {
     console.log('Upload API çağrıldı...');
     
-    // Admin authentication check (geçici olarak devre dışı)
-    // const authError = await requireAdmin(request);
-    // if (authError) {
-    //   console.log('Auth error:', authError);
-    //   return authError;
-    // }
-    
-    console.log('Auth geçici olarak atlandı');
+        // Admin authentication check
+        const authError = await requireAdmin(request);
+        if (authError) {
+          return authError;
+        }
 
     const formData = await request.formData();
     const file = formData.get('file') as File;

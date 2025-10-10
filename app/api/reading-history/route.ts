@@ -22,7 +22,11 @@ export async function GET(request: NextRequest) {
     const userId = searchParams.get('userId');
     
     if (!userId) {
-      return errorResponse('User ID is required', 400);
+      // UserID yoksa boş sonuç döndür
+      return successResponse({
+        history: [],
+        total: 0
+      });
     }
 
     // Reading history tablosunu kontrol et

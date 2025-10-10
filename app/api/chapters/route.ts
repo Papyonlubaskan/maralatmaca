@@ -29,13 +29,16 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const bookId = searchParams.get('bookId');
     
-    if (!bookId) {
-      return errorResponse('Book ID is required', 400);
+    let query = 'SELECT * FROM chapters ORDER BY order_number ASC';
+    let params: any[] = [];
+    
+    if (bookId) {
+      query = 'SELECT * FROM chapters WHERE book_id = ? ORDER BY order_number ASC';
+      params = [bookId];
     }
 
     // MySQL'den bölümleri çek
-    const query = 'SELECT * FROM chapters WHERE book_id = ? ORDER BY order_number ASC';
-    const chapters = await executeQuery(query, [bookId]);
+    const chapters = await executeQuery(query, params);
 
     return NextResponse.json({
       success: true,

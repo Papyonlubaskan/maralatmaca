@@ -49,7 +49,12 @@ export async function GET(request: NextRequest) {
     }
     
     if (!bookId && !chapterId) {
-      return errorResponse('BookId or chapterId required', 400);
+      // Parametre yoksa boş sonuç döndür (400 yerine)
+      return successResponse({
+        totalLikes: 0,
+        likeCount: 0,
+        isLiked: false
+      });
     }
 
     // userId opsiyonel - yoksa IP kullan
