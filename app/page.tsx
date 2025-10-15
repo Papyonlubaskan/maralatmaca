@@ -59,8 +59,7 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <div className="min-h-screen">
-      <SEOStructuredData type="person" />
-      <SEOStructuredData type="website" />
+      <SEOStructuredData type="homepage" />
       <Hero />
       <FeaturedBooks />
       <NewsletterSection />

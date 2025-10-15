@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 
 interface SEOStructuredDataProps {
-  type?: 'homepage' | 'about' | 'books' | 'book' | 'contact';
+  type?: 'homepage' | 'about' | 'books' | 'book' | 'contact' | 'article' | 'blog' | 'person' | 'website';
   bookData?: {
     title: string;
     author: string;
@@ -127,6 +127,60 @@ export default function SEOStructuredData({ type = 'homepage', bookData }: SEOSt
             "@type": "Person",
             "name": "Maral Atmaca",
             "jobTitle": "Yazar"
+          }
+        };
+        break;
+
+      case 'article':
+      case 'blog':
+        structuredData = {
+          "@context": "https://schema.org",
+          "@type": "Blog",
+          "name": "Maral Atmaca Blog",
+          "description": "Maral Atmaca'nın yazarlık yolculuğu, kitapları ve edebiyat üzerine düşünceleri.",
+          "url": `${baseUrl}/blog`,
+          "author": {
+            "@type": "Person",
+            "name": "Maral Atmaca",
+            "jobTitle": "Yazar"
+          },
+          "publisher": {
+            "@type": "Person",
+            "name": "Maral Atmaca"
+          }
+        };
+        break;
+
+      case 'person':
+        structuredData = {
+          "@context": "https://schema.org",
+          "@type": "Person",
+          "name": "Maral Atmaca",
+          "jobTitle": "Yazar",
+          "description": "Türk edebiyatı yazarı, çağdaş Türk edebiyatının önemli isimlerinden",
+          "url": baseUrl,
+          "image": `${baseUrl}/images/maral-atmaca-profile.jpg`,
+          "sameAs": [
+            "https://www.instagram.com/maral_atmaca",
+            "https://twitter.com/maralatmaca"
+          ]
+        };
+        break;
+
+      case 'website':
+        structuredData = {
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "Maral Atmaca - Yazar",
+          "description": "Maral Atmaca'nın resmi web sitesi. Kitapları, biyografisi ve yazarlık yolculuğu.",
+          "url": baseUrl,
+          "author": {
+            "@type": "Person",
+            "name": "Maral Atmaca"
+          },
+          "publisher": {
+            "@type": "Person",
+            "name": "Maral Atmaca"
           }
         };
         break;
