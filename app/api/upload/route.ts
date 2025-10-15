@@ -27,7 +27,9 @@ export async function POST(request: NextRequest) {
     console.log('Form data alındı:', { 
       fileName: file ? file.name : 'No file',
       uploadType: uploadType,
-      fileSize: file ? file.size : 0
+      fileSize: file ? file.size : 0,
+      fileType: file ? file.type : 'No type',
+      formDataKeys: Array.from(formData.keys())
     });
 
     if (!file) {

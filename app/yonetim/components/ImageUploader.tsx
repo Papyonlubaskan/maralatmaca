@@ -52,24 +52,21 @@ export default function ImageUploader({
     setUploading(true);
 
     try {
-      console.log('Upload başlıyor...', file.name);
+      console.log('Upload başlıyor...', file.name, 'Size:', file.size, 'Type:', file.type);
       
       // Create FormData
       const formData = new FormData();
       formData.append('file', file);
       formData.append('type', 'image');
 
-      console.log('FormData oluşturuldu');
+      console.log('FormData oluşturuldu, file count:', formData.getAll('file').length);
 
       // Admin token'ı al
       const token = sessionStorage.getItem('admin_token');
       
-      // Upload file with auth
-      const response = await fetch('/api/upload', {
+      // Upload file with auth - önce test endpoint'ini dene
+      const response = await fetch('/api/test-upload-simple', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
         body: formData
       });
 

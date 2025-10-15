@@ -2,71 +2,69 @@ import { NextRequest, NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
 
-export async function GET() {
-  return NextResponse.json({
-    message: 'Test upload API - POST method kullanın',
-    method: 'POST',
-    endpoint: '/api/test-upload-simple',
-    example: 'FormData ile file gönderin'
-  });
-}
-
 export async function POST(request: NextRequest) {
   try {
-    console.log('Upload test başladı...');
+    console.log('Test upload API çağrıldı...');
     
     const formData = await request.formData();
     const file = formData.get('file') as File;
     
-    console.log('File alındı:', file ? file.name : 'No file');
-    
+    console.log('Test - Form data alındı:', { 
+      fileName: file ? file.name : 'No file',
+      fileSize: file ? file.size : 0,
+      fileType: file ? file.type : 'No type'
+    });
+
     if (!file) {
-      return NextResponse.json({
-        success: false,
-        error: 'Dosya seçilmedi'
-      }, { status: 400 });
+      return NextResponse.json({ error: 'Dosya seçilmedi' }, { status: 400 });
     }
 
-    // Upload dizinini oluştur
+    // Upload dizinini kontrol et
     const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'images');
-    await fs.mkdir(uploadDir, { recursive: true });
-
-    // Benzersiz dosya adı oluştur
-    const timestamp = Date.now();
-    const randomString = Math.random().toString(36).substring(2, 15);
-    const extension = path.extname(file.name);
-    const filename = `test_${timestamp}_${randomString}${extension}`;
-    const filepath = path.join(uploadDir, filename);
+    console.log('Upload dizini:', uploadDir);
+    
+    try {
+      await fs.access(uploadDir);
+      console.log('Upload dizini mevcut');
+    } catch (error) {
+      console.log('Upload dizini yok, oluşturuluyor...');
+      await fs.mkdir(uploadDir, { recursive: true });
+      console.log('Upload dizini oluşturuldu');
+    }
 
     // Dosyayı buffer'a çevir
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    console.log('Dosya yazılıyor:', filepath);
-    
+    // Test dosyası oluştur
+    const timestamp = Date.now();
+    const filename = `test_${timestamp}.jpg`;
+    const filepath = path.join(uploadDir, filename);
+
     // Dosyayı kaydet
     await fs.writeFile(filepath, buffer);
-    
-    console.log('Dosya kaydedildi');
+    console.log('Test dosyası kaydedildi:', filepath);
 
     // URL oluştur
-    const url = `/uploads/images/${filename}`;
+    let url = `/uploads/images/${filename}`;
+    
+    // Railway production için absolute URL oluştur
+    if (process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_SITE_URL) {
+      url = `${process.env.NEXT_PUBLIC_SITE_URL}${url}`;
+    }
 
     return NextResponse.json({
       success: true,
-      message: 'Test dosyası başarıyla yüklendi',
-      filename: filename,
-      url: url,
-      size: buffer.length,
-      filepath: filepath
+      message: 'Test upload başarılı',
+      data: {
+        filename: filename,
+        url: url,
+        size: buffer.length
+      }
     });
 
-  } catch (error: any) {
-    console.error('Upload test error:', error);
-    return NextResponse.json({
-      success: false,
-      error: error.message,
-      stack: error.stack
-    }, { status: 500 });
+  } catch (error) {
+    console.error('Test upload error:', error);
+    return NextResponse.json({ error: 'Test upload başarısız' }, { status: 500 });
   }
 }
