@@ -32,7 +32,7 @@ export default function ImageWithFallback({
   fallbackTitle
 }: ImageWithFallbackProps) {
   const [error, setError] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!priority); // priority=true ise loading gösterme
   const [optimizedSrc, setOptimizedSrc] = useState(src);
 
   useEffect(() => {
@@ -97,12 +97,12 @@ export default function ImageWithFallback({
         className={className}
         priority={priority}
         quality={quality}
-        loading={priority ? undefined : loading}
-        placeholder="blur"
-        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+        loading={priority ? 'eager' : loading}
+        unoptimized={false}
         onError={() => {
           console.log('Image load error for:', optimizedSrc);
           setError(true);
+          setIsLoading(false);
         }}
         onLoad={() => setIsLoading(false)}
       />

@@ -60,7 +60,8 @@ export default function FeaturedBooks() {
           'Content-Type': 'application/json'
         },
         signal: controller.signal,
-        cache: 'no-store'
+        cache: 'force-cache', // Resimlerin her zaman görünmesi için cache kullan
+        next: { revalidate: 60 } // 60 saniyede bir güncelle
       });
 
       clearTimeout(timeoutId);
