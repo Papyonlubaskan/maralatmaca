@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { imageCacheManager } from '@/lib/image-cache';
+// import { imageCacheManager } from '@/lib/image-cache'; // Removed - not needed
 
 interface ImageWithFallbackProps {
   src: string;
