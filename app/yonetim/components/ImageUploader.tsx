@@ -139,6 +139,11 @@ export default function ImageUploader({
               alt="Preview"
               className="w-full h-auto max-h-96 object-cover rounded-lg"
               style={{ minHeight: '200px' }}
+              onError={(e) => {
+                console.log('Preview image error:', preview);
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+              }}
             />
             <button
               type="button"

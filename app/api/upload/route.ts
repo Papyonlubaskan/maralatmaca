@@ -77,13 +77,12 @@ export async function POST(request: NextRequest) {
     // Dosyayı kaydet
     await fs.writeFile(filepath, optimizedBuffer);
 
-    // URL oluştur
-    let url = `/uploads/${uploadType === 'image' ? 'images' : 'documents'}/${filename}`;
+    // URL oluştur - Railway için özel path
+    let url = `/uploads/images/${filename}`;
     
-    // Railway production için absolute URL oluştur
-    if (process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_SITE_URL) {
-      url = `${process.env.NEXT_PUBLIC_SITE_URL}${url}`;
-    }
+    console.log('Generated URL:', url);
+    console.log('NODE_ENV:', process.env.NODE_ENV);
+    console.log('NEXT_PUBLIC_SITE_URL:', process.env.NEXT_PUBLIC_SITE_URL);
 
     return successResponse({
       filename: filename,
