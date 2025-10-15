@@ -50,6 +50,13 @@ export default function ImageWithFallback({
         imageSrc = `/uploads/images/${imageSrc}`;
       }
       
+      // Railway production için absolute URL oluştur
+      if (typeof window !== 'undefined' && window.location.hostname === 'maralatmaca-production.up.railway.app') {
+        if (imageSrc && !imageSrc.startsWith('http')) {
+          imageSrc = `https://maralatmaca-production.up.railway.app${imageSrc}`;
+        }
+      }
+      
       setOptimizedSrc(imageSrc);
     }
   }, [src, width, height, quality]);
