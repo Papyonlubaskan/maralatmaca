@@ -35,16 +35,8 @@ export default function ConsoleDisabler() {
         timeStamp: noop
       };
       
-      // Console objesini readonly yap
-      try {
-        Object.defineProperty(window, 'console', {
-          value: window.console,
-          writable: false,
-          configurable: false
-        });
-      } catch (e) {
-        // Bazı tarayıcılarda defineProperty çalışmayabilir
-      }
+      // Console objesini readonly yapmaya çalışma - bu hata veriyor
+      // Sadece fonksiyonları override etmek yeterli
     }
   }, []);
 

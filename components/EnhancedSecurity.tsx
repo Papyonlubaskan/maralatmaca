@@ -37,16 +37,8 @@ export default function EnhancedSecurity() {
         timelineEnd: noop
       };
 
-      // Console objesini readonly yap
-      try {
-        Object.defineProperty(window, 'console', {
-          value: window.console,
-          writable: false,
-          configurable: false
-        });
-      } catch (e) {
-        // Safari gibi bazı tarayıcılarda çalışmayabilir
-      }
+      // Console objesini readonly yapmaya çalışma - bu hata veriyor
+      // Sadece fonksiyonları override etmek yeterli
 
       // F12 ve Developer Tools'u zorla kapatma girişimi
       let devtools = false;
