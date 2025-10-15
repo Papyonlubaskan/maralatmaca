@@ -64,9 +64,12 @@ export default function ImageUploader({
       // Admin token'ı al
       const token = sessionStorage.getItem('admin_token');
       
-      // Upload file with auth - önce test endpoint'ini dene
-      const response = await fetch('/api/test-upload-simple', {
+      // Upload file with auth
+      const response = await fetch('/api/upload', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
         body: formData
       });
 

@@ -57,6 +57,13 @@ export default function ImageWithFallback({
         }
       }
       
+      // Server-side rendering için de absolute URL oluştur
+      if (typeof window === 'undefined' && process.env.NEXT_PUBLIC_SITE_URL) {
+        if (imageSrc && !imageSrc.startsWith('http')) {
+          imageSrc = `${process.env.NEXT_PUBLIC_SITE_URL}${imageSrc}`;
+        }
+      }
+      
       setOptimizedSrc(imageSrc);
     }
   }, [src, width, height, quality]);
