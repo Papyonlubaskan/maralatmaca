@@ -42,6 +42,13 @@ export default function ImageWithFallback({
       // Resim yolunu düzenle
       let imageSrc = src;
       
+      // Eğer URL zaten absolute ise (http ile başlıyorsa), olduğu gibi kullan
+      if (imageSrc && imageSrc.startsWith('http')) {
+        console.log('ImageWithFallback - Already absolute URL, using as is:', imageSrc);
+        setOptimizedSrc(imageSrc);
+        return;
+      }
+      
       // Eğer resim yolu relative ise /uploads/ ile başlat
       if (imageSrc && !imageSrc.startsWith('http') && !imageSrc.startsWith('/')) {
         imageSrc = `/uploads/images/${imageSrc}`;
