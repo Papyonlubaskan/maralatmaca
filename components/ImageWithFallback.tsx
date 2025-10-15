@@ -63,9 +63,10 @@ export default function ImageWithFallback({
       }
       
       // Server-side rendering için de absolute URL oluştur
-      if (typeof window === 'undefined' && process.env.NEXT_PUBLIC_SITE_URL) {
+      if (typeof window === 'undefined') {
         if (imageSrc && !imageSrc.startsWith('http')) {
-          imageSrc = `${process.env.NEXT_PUBLIC_SITE_URL}${imageSrc}`;
+          // Railway production için hardcoded URL
+          imageSrc = `https://maralatmaca-production.up.railway.app${imageSrc}`;
           console.log('ImageWithFallback - SSR absolute URL:', imageSrc);
         }
       }
