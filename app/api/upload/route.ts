@@ -85,7 +85,12 @@ export async function POST(request: NextRequest) {
     await fs.writeFile(filepath, optimizedBuffer);
 
     // URL oluştur
-    const url = `/uploads/${uploadType === 'image' ? 'images' : 'documents'}/${filename}`;
+    let url = `/uploads/${uploadType === 'image' ? 'images' : 'documents'}/${filename}`;
+    
+    // Railway production için absolute URL oluştur
+    if (process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_SITE_URL) {
+      url = `${process.env.NEXT_PUBLIC_SITE_URL}${url}`;
+    }
 
     return successResponse({
       filename: filename,

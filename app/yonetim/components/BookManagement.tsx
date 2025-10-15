@@ -452,7 +452,18 @@ export default function BookManagement() {
                         alt={book.title}
                         className="w-20 h-28 object-cover rounded-lg shadow-sm"
                         style={{ minWidth: '80px', minHeight: '112px' }}
+                        onError={(e) => {
+                          // Resim yüklenemezse placeholder göster
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          target.nextElementSibling?.classList.remove('hidden');
+                        }}
                       />
+                    )}
+                    {(!((book as any).cover_image_url || book.cover_image)) && (
+                      <div className="w-20 h-28 bg-gray-200 dark:bg-gray-700 rounded-lg shadow-sm flex items-center justify-center">
+                        <i className="ri-image-line text-gray-400 text-2xl"></i>
+                      </div>
                     )}
                     <div>
                       <h4 className="font-semibold text-gray-900 dark:text-white">{book.title}</h4>
