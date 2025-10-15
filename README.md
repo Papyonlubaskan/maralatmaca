@@ -26,7 +26,7 @@ Modern, güvenli ve performanslı bir edebiyat paylaşım platformu. Next.js 15,
 
 1. **Projeyi klonlayın**
 ```bash
-git clone https://github.com/yourusername/maralatmaca.git
+git clone https://github.com/papyonlubaskan/maralatmaca.git
 cd maralatmaca
 ```
 
@@ -362,8 +362,8 @@ Bu proje MIT lisansı altında lisanslanmıştır.
 ## 🆘 Destek
 
 Sorularınız için:
-- Email: info@maralatmaca.com
-- GitHub Issues: [github.com/yourusername/maralatmaca/issues](https://github.com/yourusername/maralatmaca/issues)
+- Email: info@okandemir.org
+- GitHub Issues: [github.com/papyonlubaskan/maralatmaca/issues](https://github.com/papyonlubaskan/maralatmaca/issues)
 
 ## 🙏 Teşekkürler
 
@@ -374,4 +374,4 @@ Sorularınız için:
 
 ---
 
-Made with ❤️ by Maral Atmaca
+Designed by O Copyright© Dijital Pazarlama & Yazılım
