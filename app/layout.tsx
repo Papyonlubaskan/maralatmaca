@@ -9,6 +9,7 @@ import CookieConsent from '../components/CookieConsent';
 import { ToastProvider } from '../components/Toast';
 import { WebsiteStructuredData } from '../components/StructuredData';
 import ConsoleDisabler from '../components/ConsoleDisabler';
+import SEOStructuredData from '../components/SEOStructuredData';
 
 const pacifico = Pacifico({
   weight: '400',
@@ -32,8 +33,8 @@ export const metadata: Metadata = {
     default: 'Maral Atmaca - Türk Edebiyatı Yazarı | Kitaplar, Romanlar, Hikayeler',
     template: '%s | Maral Atmaca - Yazar'
   },
-  description: 'Yazar Maral Atmaca\'nın resmi web sitesi. Yarala Sar, Saka ve Sanrı gibi çağdaş Türk edebiyatının önemli eserlerini ücretsiz online okuyun. Romanlar, hikayeler ve yeni çıkan kitaplar. Türk edebiyatının yükselen sesi.',
-  keywords: ['Maral Atmaca', 'Maral Atmaca yazar', 'Türk yazar', 'çağdaş Türk edebiyatı', 'Türk romanları', 'Yarala Sar', 'Saka ve Sanrı', 'roman oku', 'hikaye oku', 'online kitap okuma', 'ücretsiz kitap', 'Türkçe edebiyat', 'kitap yazar', 'Maral Atmaca kitapları', 'Maral Atmaca eserleri', 'çağdaş edebiyat', 'Türk hikaye yazarı'],
+  description: 'Maral Atmaca, çağdaş Türk edebiyatının önemli yazarlarından. Yarala Sar, Saka ve Sanrı gibi eserleriyle tanınan yazarın resmi web sitesi. Kitaplarını ücretsiz okuyun, yazarlık yolculuğunu keşfedin.',
+  keywords: ['Maral Atmaca', 'Maral Atmaca yazar', 'Maral Atmaca kimdir', 'Maral Atmaca kitapları', 'Maral Atmaca eserleri', 'Maral Atmaca biyografi', 'Türk yazar Maral Atmaca', 'çağdaş Türk edebiyatı', 'Türk romanları', 'Yarala Sar', 'Saka ve Sanrı', 'fantastik roman yazarı', 'Türk edebiyatı yazarı', 'roman oku', 'hikaye oku', 'online kitap okuma', 'ücretsiz kitap', 'Türkçe edebiyat', 'kitap yazar', 'çağdaş edebiyat', 'Türk hikaye yazarı', 'yazarlık', 'edebiyat yazarı'],
   authors: [{ name: 'Maral Atmaca', url: 'https://maralatmaca.com' }],
   creator: 'Maral Atmaca',
   publisher: 'Maral Atmaca',
@@ -141,6 +142,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${pacifico.variable} antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300`}
       >
         <ConsoleDisabler />
+        <SEOStructuredData type="homepage" />
         <WebsiteStructuredData searchUrl="https://maralatmaca.com/kitaplar?q={search_term_string}" />
         <ToastProvider>
           <MaintenanceChecker>

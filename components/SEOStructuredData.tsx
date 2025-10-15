@@ -1,186 +1,157 @@
-import Script from 'next/script';
+'use client';
+
+import { useEffect } from 'react';
 
 interface SEOStructuredDataProps {
-  type?: 'website' | 'person' | 'book' | 'article';
-  data?: any;
+  type?: 'homepage' | 'about' | 'books' | 'book' | 'contact';
+  bookData?: {
+    title: string;
+    author: string;
+    description: string;
+    publishedDate?: string;
+    isbn?: string;
+  };
 }
 
-export default function SEOStructuredData({ type = 'website', data }: SEOStructuredDataProps) {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://maralatmaca-production.up.railway.app';
+export default function SEOStructuredData({ type = 'homepage', bookData }: SEOStructuredDataProps) {
+  useEffect(() => {
+    const baseUrl = 'https://maralatmaca-production.up.railway.app';
+    
+    let structuredData: any = {};
 
-  const getStructuredData = () => {
     switch (type) {
-      case 'person':
-        return {
+      case 'homepage':
+        structuredData = {
           "@context": "https://schema.org",
           "@type": "Person",
           "name": "Maral Atmaca",
-          "alternateName": ["Maral Atmaca Yazar", "Maral Atmaca Türk Yazar"],
-          "description": "Türk edebiyatının yükselen sesi, çağdaş roman ve hikaye yazarı",
+          "jobTitle": "Yazar",
+          "description": "Türk edebiyatı yazarı, çağdaş Türk edebiyatının önemli isimlerinden",
           "url": baseUrl,
           "image": `${baseUrl}/images/maral-atmaca-profile.jpg`,
           "sameAs": [
             "https://www.instagram.com/maral_atmaca",
-            "https://twitter.com/maralatmaca",
-            "https://www.facebook.com/maralatmaca"
+            "https://twitter.com/maralatmaca"
           ],
-          "jobTitle": "Yazar",
-          "worksFor": {
-            "@type": "Organization",
-            "name": "Maral Atmaca"
-          },
-          "alumniOf": "Türk Edebiyatı",
-          "birthPlace": "Aksaray, Türkiye",
-          "nationality": "Türk",
-          "genre": ["Çağdaş Türk Edebiyatı", "Roman", "Hikaye", "Türkçe Edebiyat"],
-          "award": "Türk Edebiyatının Yükselen Sesi",
-          "knowsAbout": ["Türk Edebiyatı", "Roman Yazımı", "Hikaye Anlatımı", "Çağdaş Edebiyat"]
+          "knowsAbout": [
+            "Türk edebiyatı",
+            "Fantastik roman",
+            "Çağdaş edebiyat",
+            "Yazarlık",
+            "Roman yazımı"
+          ],
+          "alumniOf": "Türk edebiyatı",
+          "award": [
+            "Çağdaş Türk edebiyatı yazarı",
+            "Fantastik roman yazarı"
+          ]
         };
+        break;
+
+      case 'about':
+        structuredData = {
+          "@context": "https://schema.org",
+          "@type": "Person",
+          "name": "Maral Atmaca",
+          "jobTitle": "Yazar",
+          "description": "Maral Atmaca kimdir? Türk edebiyatının yükselen yıldızı, fantastik roman yazarı. Biyografisi ve yazarlık yolculuğu.",
+          "url": `${baseUrl}/hakkimda`,
+          "image": `${baseUrl}/images/maral-atmaca-profile.jpg`,
+          "birthPlace": "Türkiye",
+          "nationality": "Türk",
+          "occupation": "Yazar",
+          "genre": ["Fantastik roman", "Çağdaş edebiyat", "Türk edebiyatı"],
+          "works": [
+            {
+              "@type": "Book",
+              "name": "Yarala Sar",
+              "author": "Maral Atmaca"
+            },
+            {
+              "@type": "Book", 
+              "name": "Saka ve Sanrı",
+              "author": "Maral Atmaca"
+            }
+          ]
+        };
+        break;
+
+      case 'books':
+        structuredData = {
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          "name": "Maral Atmaca Kitapları",
+          "description": "Maral Atmaca'nın tüm kitapları, romanları ve eserleri. Yarala Sar, Saka ve Sanrı gibi önemli eserlerini keşfedin.",
+          "url": `${baseUrl}/kitaplar`,
+          "mainEntity": {
+            "@type": "Person",
+            "name": "Maral Atmaca",
+            "jobTitle": "Yazar"
+          }
+        };
+        break;
 
       case 'book':
-        return {
-          "@context": "https://schema.org",
-          "@type": "Book",
-          "name": data?.title || "Maral Atmaca Kitapları",
-          "author": {
-            "@type": "Person",
-            "name": "Maral Atmaca"
-          },
-          "publisher": {
-            "@type": "Organization",
-            "name": "Maral Atmaca"
-          },
-          "description": data?.description || "Türk edebiyatının önemli eserleri",
-          "url": data?.url || `${baseUrl}/kitaplar`,
-          "image": data?.cover_image || `${baseUrl}/images/book-placeholder.jpg`,
-          "inLanguage": "tr",
-          "genre": "Çağdaş Türk Edebiyatı",
-          "bookFormat": "EBook",
-          "isAccessibleForFree": true,
-          "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "TRY",
-            "availability": "https://schema.org/InStock"
-          }
-        };
-
-      case 'article':
-        return {
-          "@context": "https://schema.org",
-          "@type": "Article",
-          "headline": data?.title || "Maral Atmaca - Yazar",
-          "description": data?.description || "Türk edebiyatının yükselen sesi",
-          "author": {
-            "@type": "Person",
-            "name": "Maral Atmaca"
-          },
-          "publisher": {
-            "@type": "Organization",
-            "name": "Maral Atmaca",
-            "logo": {
-              "@type": "ImageObject",
-              "url": `${baseUrl}/maral-logo.svg`
-            }
-          },
-          "datePublished": data?.datePublished || new Date().toISOString(),
-          "dateModified": data?.dateModified || new Date().toISOString(),
-          "url": data?.url || baseUrl,
-          "image": data?.image || `${baseUrl}/images/og-image.jpg`,
-          "inLanguage": "tr"
-        };
-
-      default: // website
-        return {
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          "name": "Maral Atmaca - Yazar",
-          "alternateName": ["Maral Atmaca Resmi Web Sitesi", "Maral Atmaca Kitapları"],
-          "url": baseUrl,
-          "description": "Türk edebiyatının yükselen sesi Maral Atmaca'nın resmi web sitesi. Çağdaş Türk edebiyatının önemli eserlerini ücretsiz online okuyun.",
-          "author": {
-            "@type": "Person",
-            "name": "Maral Atmaca"
-          },
-          "publisher": {
-            "@type": "Person",
-            "name": "Maral Atmaca"
-          },
-          "inLanguage": "tr",
-          "copyrightYear": "2025",
-          "genre": "Çağdaş Türk Edebiyatı",
-          "keywords": "Maral Atmaca, Türk yazar, çağdaş edebiyat, roman, hikaye, ücretsiz kitap",
-          "potentialAction": {
-            "@type": "SearchAction",
-            "target": {
-              "@type": "EntryPoint",
-              "urlTemplate": `${baseUrl}/kitaplar?q={search_term_string}`
+        if (bookData) {
+          structuredData = {
+            "@context": "https://schema.org",
+            "@type": "Book",
+            "name": bookData.title,
+            "author": {
+              "@type": "Person",
+              "name": bookData.author,
+              "url": baseUrl
             },
-            "query-input": "required name=search_term_string"
+            "description": bookData.description,
+            "publisher": {
+              "@type": "Organization",
+              "name": "Ephesus Yayınları"
+            },
+            "datePublished": bookData.publishedDate || "2023",
+            "isbn": bookData.isbn,
+            "inLanguage": "tr",
+            "genre": "Fantastik Roman",
+            "url": `${baseUrl}/kitaplar/${bookData.title.toLowerCase().replace(/\s+/g, '-')}`
+          };
+        }
+        break;
+
+      case 'contact':
+        structuredData = {
+          "@context": "https://schema.org",
+          "@type": "ContactPage",
+          "name": "Maral Atmaca İletişim",
+          "description": "Maral Atmaca ile iletişime geçin. Yazar hakkında sorularınız için iletişim bilgileri.",
+          "url": `${baseUrl}/iletisim`,
+          "mainEntity": {
+            "@type": "Person",
+            "name": "Maral Atmaca",
+            "jobTitle": "Yazar"
           }
         };
+        break;
     }
-  };
 
-  return (
-    <Script
-      id="structured-data"
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{
-        __html: JSON.stringify(getStructuredData(), null, 2)
-      }}
-    />
-  );
-}
+    // Mevcut structured data'yı temizle
+    const existingScript = document.querySelector('script[type="application/ld+json"]');
+    if (existingScript) {
+      existingScript.remove();
+    }
 
-// Breadcrumb structured data
-export function BreadcrumbStructuredData({ items }: { items: Array<{ name: string; url: string }> }) {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://maralatmaca-production.up.railway.app';
+    // Yeni structured data'yı ekle
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.textContent = JSON.stringify(structuredData);
+    document.head.appendChild(script);
 
-  const breadcrumbData = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": items.map((item, index) => ({
-      "@type": "ListItem",
-      "position": index + 1,
-      "name": item.name,
-      "item": item.url.startsWith('http') ? item.url : `${baseUrl}${item.url}`
-    }))
-  };
-
-  return (
-    <Script
-      id="breadcrumb-structured-data"
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{
-        __html: JSON.stringify(breadcrumbData, null, 2)
-      }}
-    />
-  );
-}
-
-// FAQ structured data
-export function FAQStructuredData({ faqs }: { faqs: Array<{ question: string; answer: string }> }) {
-  const faqData = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": faqs.map(faq => ({
-      "@type": "Question",
-      "name": faq.question,
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": faq.answer
+    return () => {
+      // Cleanup
+      const scriptToRemove = document.querySelector('script[type="application/ld+json"]');
+      if (scriptToRemove) {
+        scriptToRemove.remove();
       }
-    }))
-  };
+    };
+  }, [type, bookData]);
 
-  return (
-    <Script
-      id="faq-structured-data"
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{
-        __html: JSON.stringify(faqData, null, 2)
-      }}
-    />
-  );
+  return null;
 }
