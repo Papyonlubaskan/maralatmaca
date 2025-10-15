@@ -132,33 +132,52 @@ export default function BookManagement() {
     }
 
     try {
-      // Simulated save - in real app, this would call an API
-      const newBook: any = {
-        id: editingBook?.id || Date.now().toString(),
+      const bookData = {
         title: Validator.sanitizeInput(formData.title),
         description: Validator.sanitizeInput(formData.description),
         author: Validator.sanitizeInput(formData.author),
         category: Validator.sanitizeInput(formData.category),
-        cover_image_url: Validator.sanitizeInput(formData.cover_image_url),
+        cover_image: Validator.sanitizeInput(formData.cover_image_url), // cover_image_url yerine cover_image
         status: formData.status,
         publish_date: formData.publish_date,
-        views: (editingBook as any)?.views || 0,
         amazon_link: formData.amazon_link ? Validator.sanitizeInput(formData.amazon_link) : undefined,
         dr_link: formData.dr_link ? Validator.sanitizeInput(formData.dr_link) : undefined,
         idefix_link: formData.idefix_link ? Validator.sanitizeInput(formData.idefix_link) : undefined
       };
 
+      const token = sessionStorage.getItem('admin_token');
+      
+      let response;
       if (editingBook) {
         // Update existing book
-        const updatedBooks = books.map(book => 
-          book.id === editingBook.id ? newBook : book
-        );
-        setBooks(updatedBooks);
-        setSuccessMessage('Kitap başarıyla güncellendi!');
+        response = await fetch(`/api/books/${editingBook.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(bookData)
+        });
       } else {
         // Add new book
-        setBooks([...books, newBook]);
-        setSuccessMessage('Kitap başarıyla eklendi!');
+        response = await fetch('/api/books', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(bookData)
+        });
+      }
+
+      const result = await response.json();
+      
+      if (result.success) {
+        // Refresh books list
+        await loadBooksData();
+        setSuccessMessage(editingBook ? 'Kitap başarıyla güncellendi!' : 'Kitap başarıyla eklendi!');
+      } else {
+        throw new Error(result.error || 'İşlem başarısız');
       }
 
       // Reset form

@@ -82,13 +82,7 @@ export default function ImageUploader({
         let uploadedUrl = result.data.url;
         console.log('Upload başarılı:', uploadedUrl);
         
-        // Railway production için absolute URL oluştur
-        if (typeof window !== 'undefined' && window.location.hostname === 'maralatmaca-production.up.railway.app') {
-          if (uploadedUrl && !uploadedUrl.startsWith('http')) {
-            uploadedUrl = `https://maralatmaca-production.up.railway.app${uploadedUrl}`;
-          }
-        }
-        
+        // URL'yi olduğu gibi kullan (relative URL)
         setPreview(uploadedUrl);
         onChange(uploadedUrl);
         
