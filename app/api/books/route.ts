@@ -105,7 +105,14 @@ export async function GET(request: NextRequest) {
       }
     };
 
-    return NextResponse.json(responseData);
+    const apiResponse = NextResponse.json(responseData);
+    
+    // Cache header'larını ekle
+    apiResponse.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    apiResponse.headers.set('Pragma', 'no-cache');
+    apiResponse.headers.set('Expires', '0');
+    
+    return apiResponse;
   } catch (error: any) {
     console.error('❌ Books API Error:', {
       message: error.message,

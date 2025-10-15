@@ -54,14 +54,13 @@ export default function FeaturedBooks() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 saniye timeout
 
-      const response = await fetch('/api/books?status=published&limit=3', {
+      const response = await fetch('/api/books?status=published&limit=3&t=' + Date.now(), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
         },
         signal: controller.signal,
-        cache: 'force-cache', // Resimlerin her zaman görünmesi için cache kullan
-        next: { revalidate: 60 } // 60 saniyede bir güncelle
+        cache: 'no-cache' // Her zaman fresh data al
       });
 
       clearTimeout(timeoutId);
