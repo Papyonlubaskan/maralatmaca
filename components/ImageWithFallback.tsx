@@ -116,18 +116,15 @@ export default function ImageWithFallback({
           </div>
         </div>
       )}
-      <Image
+      <img
         src={optimizedSrc}
         alt={alt}
-        fill={fill}
-        width={!fill ? width : undefined}
-        height={!fill ? height : undefined}
-        sizes={sizes}
         className={className}
-        priority={priority}
-        quality={quality}
-        loading={priority ? 'eager' : loading}
-        unoptimized={true}
+        style={{
+          width: fill ? '100%' : width ? `${width}px` : 'auto',
+          height: fill ? '100%' : height ? `${height}px` : 'auto',
+          objectFit: 'contain'
+        }}
         onError={() => {
           console.log('ImageWithFallback - Image load error for:', optimizedSrc);
           console.log('ImageWithFallback - Original src was:', src);
