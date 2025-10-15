@@ -142,7 +142,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${pacifico.variable} antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300`}
       >
-        <ConsoleDisabler />
+        {/* <ConsoleDisabler /> */}
         <SimpleSecurity />
         <SEOStructuredData type="homepage" />
         <WebsiteStructuredData searchUrl="https://maralatmaca.com/kitaplar?q={search_term_string}" />
