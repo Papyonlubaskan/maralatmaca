@@ -119,7 +119,7 @@ export default function ImageWithFallback({
         priority={priority}
         quality={quality}
         loading={priority ? 'eager' : loading}
-        unoptimized={false}
+        unoptimized={true}
         onError={() => {
           console.log('ImageWithFallback - Image load error for:', optimizedSrc);
           console.log('ImageWithFallback - Original src was:', src);
