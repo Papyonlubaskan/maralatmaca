@@ -37,23 +37,28 @@ export default function ImageWithFallback({
 
   useEffect(() => {
     if (src) {
+      console.log('ImageWithFallback - Original src:', src);
+      
       // Resim yolunu düzenle
       let imageSrc = src;
       
       // Eğer resim yolu relative ise /uploads/ ile başlat
       if (imageSrc && !imageSrc.startsWith('http') && !imageSrc.startsWith('/')) {
         imageSrc = `/uploads/images/${imageSrc}`;
+        console.log('ImageWithFallback - Added /uploads/images/ prefix:', imageSrc);
       }
       
       // Eğer resim yolu /uploads/images/ ile başlamıyorsa düzenle
       if (imageSrc && !imageSrc.startsWith('http') && !imageSrc.includes('/uploads/')) {
         imageSrc = `/uploads/images/${imageSrc}`;
+        console.log('ImageWithFallback - Added /uploads/ prefix:', imageSrc);
       }
       
       // Railway production için absolute URL oluştur
       if (typeof window !== 'undefined' && window.location.hostname === 'maralatmaca-production.up.railway.app') {
         if (imageSrc && !imageSrc.startsWith('http')) {
           imageSrc = `https://maralatmaca-production.up.railway.app${imageSrc}`;
+          console.log('ImageWithFallback - Railway absolute URL:', imageSrc);
         }
       }
       
@@ -61,9 +66,11 @@ export default function ImageWithFallback({
       if (typeof window === 'undefined' && process.env.NEXT_PUBLIC_SITE_URL) {
         if (imageSrc && !imageSrc.startsWith('http')) {
           imageSrc = `${process.env.NEXT_PUBLIC_SITE_URL}${imageSrc}`;
+          console.log('ImageWithFallback - SSR absolute URL:', imageSrc);
         }
       }
       
+      console.log('ImageWithFallback - Final optimized src:', imageSrc);
       setOptimizedSrc(imageSrc);
     }
   }, [src, width, height, quality]);
@@ -114,7 +121,8 @@ export default function ImageWithFallback({
         loading={priority ? 'eager' : loading}
         unoptimized={false}
         onError={() => {
-          console.log('Image load error for:', optimizedSrc);
+          console.log('ImageWithFallback - Image load error for:', optimizedSrc);
+          console.log('ImageWithFallback - Original src was:', src);
           setError(true);
           setIsLoading(false);
         }}
