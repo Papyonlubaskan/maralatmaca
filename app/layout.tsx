@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL('https://maralatmaca-production.up.railway.app'),
   alternates: {
-    canonical: '/',
+    canonical: 'https://maralatmaca-production.up.railway.app',
   },
   openGraph: {
     type: 'profile',

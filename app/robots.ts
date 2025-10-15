@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { executeQuery } from '@/lib/database/mysql';
 
 export default async function robots(): Promise<MetadataRoute.Robots> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://maralatmaca-production.up.railway.app';
+  const baseUrl = 'https://maralatmaca-production.up.railway.app';
   
   // Bakım modunu kontrol et
   let isMaintenanceMode = false;

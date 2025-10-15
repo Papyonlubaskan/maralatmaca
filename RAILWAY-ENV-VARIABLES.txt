@@ -3,7 +3,7 @@
 
 NODE_ENV=production
 
-# Site URL (deploy sonrası Railway domain'i ile güncelle)
+# Site URL - Railway domain SEO optimized
 NEXT_PUBLIC_SITE_URL=https://maralatmaca-production.up.railway.app
 NEXT_PUBLIC_API_URL=https://maralatmaca-production.up.railway.app/api
 NEXT_PUBLIC_SITE_NAME=Maral Atmaca
