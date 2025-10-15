@@ -17,6 +17,8 @@ interface EmailConfig {
   maxConnections?: number;
   maxMessages?: number;
   rateLimit?: number;
+  // Nodemailer için ek ayarlar
+  [key: string]: any;
 }
 
 interface EmailData {
@@ -30,7 +32,7 @@ class EmailService {
   private transporter: nodemailer.Transporter;
 
   constructor() {
-    const config: EmailConfig = {
+    const config: any = {
       host: process.env.EMAIL_HOST || 'smtp.gmail.com',
       port: parseInt(process.env.EMAIL_PORT || '587'),
       secure: process.env.EMAIL_SECURE === 'true',

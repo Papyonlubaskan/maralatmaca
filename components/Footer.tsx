@@ -219,6 +219,17 @@ export default function Footer() {
             <p className="text-gray-500 dark:text-gray-400">
               {footerSettings.copyright_text || '2025 Maral Atmaca. Tüm hakları saklıdır.'}
             </p>
+            <div className="mt-4">
+              <a 
+                href="https://okandemir.org/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-gray-400 dark:text-gray-500 hover:text-orange-600 dark:hover:text-orange-400 transition-colors text-sm"
+              >
+                <span>Designed by</span>
+                <span className="font-semibold">O Copyright© Dijital Pazarlama & Yazılım</span>
+              </a>
+            </div>
           </div>
         </div>
 

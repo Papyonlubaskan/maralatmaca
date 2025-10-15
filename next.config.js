@@ -8,6 +8,28 @@ const nextConfig = {
     ignoreBuildErrors: false,
   },
   
+  // Console log'ları tamamen kapat
+  webpack: (config, { dev, isServer }) => {
+    if (!dev) {
+      config.optimization = {
+        ...config.optimization,
+        minimizer: [
+          ...config.optimization.minimizer,
+          new (require('terser-webpack-plugin'))({
+            terserOptions: {
+              compress: {
+                drop_console: true,
+                drop_debugger: true,
+                pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn', 'console.error'],
+              },
+            },
+          }),
+        ],
+      }
+    }
+    return config
+  },
+  
   // Output configuration for deployment
   output: process.env.BUILD_STANDALONE === 'true' ? 'standalone' : undefined,
   outputFileTracingRoot: __dirname,

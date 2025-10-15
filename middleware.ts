@@ -2,9 +2,8 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  // Bakım modu varsayılan AÇIK - Production'da
-  // Development'ta kapalı
-  const maintenanceMode = process.env.NODE_ENV === 'production' && process.env.MAINTENANCE_MODE !== 'false';
+  // Bakım modu sadece explicit olarak açıldığında aktif
+  const maintenanceMode = process.env.MAINTENANCE_MODE === 'true';
   const pathname = request.nextUrl.pathname;
 
   // Admin paneli ve bakım sayfası hariç tüm sayfaları bakıma yönlendir

@@ -1,7 +1,7 @@
 # Railway Environment Variables - Kopyala/Yapıştır
 # Railway Dashboard → Your Service → Variables sekmesine yapıştır
 
-NODE_ENV=production
+NODE_ENV=railway
 
 # Site URL (deploy sonrası Railway domain'i ile güncelle)
 NEXT_PUBLIC_SITE_URL=https://your-app.up.railway.app

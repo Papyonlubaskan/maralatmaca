@@ -8,6 +8,7 @@ import GoogleAnalytics from '../components/GoogleAnalytics';
 import CookieConsent from '../components/CookieConsent';
 import { ToastProvider } from '../components/Toast';
 import { WebsiteStructuredData } from '../components/StructuredData';
+import ConsoleDisabler from '../components/ConsoleDisabler';
 
 const pacifico = Pacifico({
   weight: '400',
@@ -139,6 +140,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${pacifico.variable} antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300`}
       >
+        <ConsoleDisabler />
         <WebsiteStructuredData searchUrl="https://maralatmaca.com/kitaplar?q={search_term_string}" />
         <ToastProvider>
           <MaintenanceChecker>
