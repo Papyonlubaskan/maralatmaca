@@ -25,7 +25,7 @@ export default function BooksManager() {
     title: '',
     description: '',
     content: '',
-    cover_image_url: '',
+    cover_image: '',
     publish_date: '',
     status: 'published' as string,
     amazon_link: '',
@@ -80,7 +80,7 @@ export default function BooksManager() {
       title: '',
       description: '',
       content: '',
-      cover_image_url: '',
+      cover_image: '',
       publish_date: '',
       status: 'published' as string,
       amazon_link: '',
@@ -130,7 +130,7 @@ export default function BooksManager() {
       slug: book.slug || '',
       description: book.description || '',
       content: book.content || '',
-      cover_image_url: book.cover_image_url || book.cover_image || '',
+      cover_image: book.cover_image || '',
       publish_date: book.publish_date || '',
       status: book.status || 'draft',
       amazon_link: book.amazon_link || '',
@@ -276,7 +276,7 @@ export default function BooksManager() {
             slug: newBook.slug || '',
             description: newBook.description || '',
             content: newBook.content || '',
-            cover_image_url: newBook.cover_image_url || newBook.cover_image || '',
+            cover_image: newBook.cover_image || '',
             publish_date: newBook.publish_date || '',
             status: newBook.status || 'draft',
             amazon_link: newBook.amazon_link || '',
@@ -524,7 +524,7 @@ export default function BooksManager() {
       if (!result.success) throw new Error(result.error || 'Kapak resmi yükleme hatası');
 
       const imageUrl = result.data.file_path || result.data.url;
-      setFormData(prev => ({ ...prev, cover_image_url: imageUrl }));
+      setFormData(prev => ({ ...prev, cover_image: imageUrl }));
       showMessage('Kapak resmi başarıyla yüklendi!', 'success');
     } catch (e: any) {
       console.error('Cover upload error:', e);
@@ -692,8 +692,8 @@ export default function BooksManager() {
               {/* Cover */}
               <ImageUploader
                 label="Kapak Resmi"
-                value={formData.cover_image_url}
-                onChange={(url) => setFormData({ ...formData, cover_image_url: url })}
+                value={formData.cover_image}
+                onChange={(url) => setFormData({ ...formData, cover_image: url })}
               />
 
               {/* Publish date & status */}
@@ -1082,8 +1082,8 @@ export default function BooksManager() {
             <div key={book.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
               <div className="p-6">
                 <div className="flex items-start space-x-4">
-                  {book.cover_image_url && (
-                    <img src={book.cover_image_url} alt={book.title} className="w-24 h-32 object-cover object-top rounded-lg" />
+                  {book.cover_image && (
+                    <img src={book.cover_image} alt={book.title} className="w-24 h-32 object-cover object-top rounded-lg" />
                   )}
 
                   <div className="flex-1">

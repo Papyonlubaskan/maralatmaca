@@ -9,7 +9,7 @@ interface Book {
   id: number;
   title: string;
   description: string;
-  cover_image_url: string;
+  cover_image: string;
   author: string;
   category: string;
   views: number;
@@ -81,7 +81,7 @@ export default function FeaturedBooks() {
             id: book.id,
             title: book.title || 'Başlıksız Kitap',
             description: book.description || 'Açıklama mevcut değil.',
-            cover_image_url: book.cover_image || '',
+            cover_image: book.cover_image || '',
             author: book.author || 'Maral Atmaca',
             category: book.category || 'Genel',
             views: typeof book.views === 'number' ? book.views : 0,
@@ -274,7 +274,7 @@ export default function FeaturedBooks() {
               {/* Kitap Kapağı */}
               <div className="aspect-[3/4] overflow-hidden relative">
                 <ImageWithFallback
-                  src={book.cover_image_url}
+                  src={book.cover_image}
                   alt={book.title}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
