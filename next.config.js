@@ -60,6 +60,8 @@ const nextConfig = {
     remotePatterns: [
       // Local uploads için remote pattern gerekli değil
     ],
+    // Local dosyalar için unoptimized kullan
+    unoptimized: false,
   },
 
   // Security headers

@@ -37,22 +37,20 @@ export default function ImageWithFallback({
 
   useEffect(() => {
     if (src) {
-      // Önbellekten kontrol et
-      const cacheKey = `${src}-${width || 'fill'}-${height || 'fill'}-${quality}`;
-      const cached = imageCacheManager.get(cacheKey);
+      // Resim yolunu düzenle
+      let imageSrc = src;
       
-      if (cached) {
-        setOptimizedSrc(cached);
-      } else {
-        // Optimize et ve önbelleğe ekle
-        const optimized = imageCacheManager.optimizeUrl(src, {
-          width: width,
-          height: height,
-          quality: quality,
-          format: 'webp'
-        });
-        setOptimizedSrc(optimized);
+      // Eğer resim yolu relative ise /uploads/ ile başlat
+      if (imageSrc && !imageSrc.startsWith('http') && !imageSrc.startsWith('/')) {
+        imageSrc = `/uploads/images/${imageSrc}`;
       }
+      
+      // Eğer resim yolu /uploads/images/ ile başlamıyorsa düzenle
+      if (imageSrc && !imageSrc.startsWith('http') && !imageSrc.includes('/uploads/')) {
+        imageSrc = `/uploads/images/${imageSrc}`;
+      }
+      
+      setOptimizedSrc(imageSrc);
     }
   }, [src, width, height, quality]);
 
@@ -102,7 +100,10 @@ export default function ImageWithFallback({
         loading={priority ? undefined : loading}
         placeholder="blur"
         blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-        onError={() => setError(true)}
+        onError={() => {
+          console.log('Image load error for:', optimizedSrc);
+          setError(true);
+        }}
         onLoad={() => setIsLoading(false)}
       />
     </div>
